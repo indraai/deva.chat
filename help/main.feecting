@@ -1,0 +1,25 @@
+# OpenAI Deva
+
+p:This is the main help file for OpenAI Deva. The Deva for interating with OpenAI
+
+uid: 6162515749966
+key: #open
+name: OpenAI Deva
+describe: The Deva for interating with OpenAI api
+
+## Functions
+p: Functions are the internal featurs that can be accessed by methods and listeners.
+
+## Methods
+p: Methods are exposed to the events and question prompt.
+
+cmd:#oai uid
+p:Generate a unique id from the OpenAI Deva.
+
+cmd:#oai status
+p:Return the status for the OpenAI Deva.
+
+cmd:#oai help
+p:Get help using the OpenAI Deva
+
+copyright:(c)2023 Quinn Michaels

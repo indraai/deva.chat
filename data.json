@@ -1,0 +1,97 @@
+{
+  "name": "OpenAI Deva Data File",
+  "describe": "The main Data file for OpenAI Deva",
+  "copyright": "Copyright (c)2023 Quinn Michaels. All rights reserved.",
+  "data": {
+    "agent": {
+      "uid": 6162515749966,
+      "key": "open",
+      "prompt": {
+        "emoji": "⊙",
+        "text": "open",
+        "colors": {
+          "label": {
+            "R": 16,
+            "G": 163,
+            "B": 127
+          },
+          "text": {
+            "R": 16,
+            "G": 163,
+            "B": 127
+          }
+        }
+      },
+      "voice": {
+        "speech": "Alex",
+        "speed": 1
+      },
+      "profile": {
+        "name": "OpenAI Deva",
+        "describe": "The Open Deva for deva.world OpenAI services #ChatGPT and #DALLE",
+        "emoji": "/public/devas/openai/emoji.png",
+        "avatar": "/public/devas/openai/avatar.png",
+        "background": "",
+        "gender": "M"
+      }
+    },
+    "vars": {
+      "messages": {
+        "init": "🟠 INIT",
+        "start": "🔵 START",
+        "enter": "🟢 ENTER",
+        "stop": "🔴 STOP",
+        "exit": "🟡 EXIT",
+        "done": "🟣 DONE",
+        "error": "💣 ERROR!",
+        "click": "🐭 OPEN THE CLICKER.",
+        "config": "⚙️ set CONFIG...",
+        "header": "ℹ️ set HEADER...",
+        "footer": "ℹ️ set FOOTER...",
+        "outline": "📌 set OUTLINE...",
+        "meta": "📎 write #META...",
+        "story": "✍️ write #STORY...",
+        "open": "📂 open #STORY...",
+        "hash": "🔐 set #HASH..."
+      },
+      "history": [],
+      "chat": {
+        "model": "gpt-3.5-turbo",
+        "models": {
+          "m1": "gpt-3.5-turbo",
+          "m2": "gpt-4",
+          "m3": "gpt-4-0314",
+          "m4": "gpt-4-32k",
+          "m5": "gpt-4-32k-0314",
+          "m6": "gpt-3.5-turbo-0301"
+        },
+        "name": "Quinn",
+        "role": "user",
+        "temperature": false,
+        "max_tokens": false,
+        "frequency_penalty": false,
+        "presence_penalty": false,
+        "logit_bias": false,
+        "prompt": false,
+        "n": 1
+      },
+      "image": {
+        "n": 3,
+        "size": "512x512",
+        "sizes": [
+          "256x256",
+          "512x512",
+          "1024x1024"
+        ],
+        "response_format": "url",
+        "response_formats": [
+          "url",
+          "b64_json"
+        ],
+        "sender": "security",
+        "receiver": "deva",
+        "prompt": false
+      }
+    }
+  }
+}
