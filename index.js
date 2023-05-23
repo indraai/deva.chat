@@ -99,70 +99,53 @@ const OPEN = new Deva({
 
     image(packet) {
       this.vars.image.prompt = opts.text;
-
+      const {key} = this.agent();
+      const {id, q} = packet;
       return new Promise((resolve, reject) => {
+        if (!packet.q.text) return resolve(this._messages.notext);
         this.modules.openai.createImage({
           prompt: this.vars.image.prompt,
           n: this.vars.image.n,
           size: this.vars.image.size,
           response_format: this.vars.image.response_format
         }).then(image => {
-          const html = [
-            `::begin:${key}:chat:${id}`,
-            `p: ${this.vars.image.prompt}`,
-            `<img class="${this.agent.key}-image" src="${image.data.data[0].url}"/>`
-          ]
+          const hash_val = [
+            `p:${this.vars.image.prompt}`,
+          ];
+          image.data.data.forEach(img => {
+            hash_val.push(`image: ${img.url}`);
+          })
+
+          const text = [
+            `::begin:${key}:image:${id}`,
+            hash_val.join('\n'),
+            `::end:${key}:image:${this.hash(hash_val.join('\n'))}`
+          ].join('\n')
           return resolve({
-            text: this.vars.image.prompt,
-            html: `<img class="${this.agent.key}-image" src="${image.data.data[0].url}"/>`,
+            text,
+            html: false,
             data: image.data.data,
           });
         }).catch(reject);
       });
     },
 
-    /**************
-    func: tagging
-    params: opts - packet containing the question and answer to parse.
-    describe: The tagging function takes an 'opts' parameter to parse the various
-    tags in a message from the agent. Then it will take that and store it in
-    local json files for later use.
-    ***************/
-    tagging(opts) {
-
-      const {q, a} = opts;                     // receive q, a options from opts
-      const {text} = q;
-      const {content} = a.choices[0].message;  // isolate content from a
-      const tags = {text:false,content:false};                         // add tags key to opts object
-
-      opts.q.tags = {};
-      opts.a.tags = {};
-      // regular expressions to loop through for detection.
-      const reggies = {
-        command: /\/\w+/g,
-        locaction: /$\w+/g,
-        people: /@\w+/g,
-        data: /#\w+/g,
-      }
-      // loop over the regular expressions and if a match is found then append it to the tags object.
-      for (let reg in reggies) {
-        const _text = text.match(reggies[reg]);
-        const _content = content.match(reggies[reg]);
-        if (_text) opts.q.tags[reg] = _text;
-        if (_content) opts.a.tags[reg] = _content;
-      }
-      return opts;
-    },
-
   },
   methods: {
+    /**************
+    method: chat
+    params: packet
+    describe: send a chat to oepnai
+    ***************/
     chat(packet) {
       return this.func.chat(packet);
     },
-    guru(packet) {
-      // from here the guru needs to be able to send messages to story buddy or story teller or both.
 
-    },
+    /**************
+    method: images
+    params: packet
+    describe: get an image from oepn ai
+    ***************/
     image(packet) {
       return this.func.image(packet.q);
     },
