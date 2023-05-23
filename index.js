@@ -1,5 +1,6 @@
 // Copyright (c)2023 Quinn Michaels
 // OpenAI Deva
+// used for connecting into open ai services for cht and images.
 
 const fs = require('fs');
 const path = require('path');
