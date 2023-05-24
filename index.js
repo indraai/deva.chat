@@ -31,8 +31,6 @@ const OPEN = new Deva({
   agent: {
     uid: agent.uid,
     key: agent.key,
-    name: agent.name,
-    describe: agent.describe,
     prompt: agent.prompt,
     voice: agent.voice,
     profile: agent.profile,
