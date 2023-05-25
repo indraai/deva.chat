@@ -59,6 +59,7 @@ const OPEN = new Deva({
           q.text, // include the text of the packet
           `::END:QUESTION:${this.hash(packet.q.text)}`, // set the end block with the hash of the question text.
         ].join('\n'); // join the array on line breaks to for the text block
+        this.prompt(question);
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
