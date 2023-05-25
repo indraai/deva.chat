@@ -54,6 +54,11 @@ const OPEN = new Deva({
         const {key} = this.agent();
         const {id, q} = packet;
 
+        const question = [ // construct the main question array
+          `::BEGIN:QUESTION:${id}`, // include the begin block with id
+          q.text, // include the text of the packet
+          `::END:QUESTION:${this.hash(packet.q.text)}`, // set the end block with the hash of the question text.
+        ].join('\n'); // join the array on line breaks to for the text block
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
@@ -61,13 +66,18 @@ const OPEN = new Deva({
             {
               role: this.vars.chat.role,
               name: this.vars.chat.name,
-              content: q.text,
+              content: question,
             }
           ]
         }).then(chat => {
           const {content} = chat.data.choices[0].message;
+          const answer = [
+            `::BEGIN:ANSWER:${id}`,
+            content,
+            `::END:ANSWER:${this.hash(content)}`,
+          ].join('\n';)
           return resolve({
-            text: content,
+            text: answer,
             html: false,
             data: chat.data,
           })
