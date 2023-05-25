@@ -75,7 +75,7 @@ const OPEN = new Deva({
             `::BEGIN:ANSWER:${id}`,
             content,
             `::END:ANSWER:${this.hash(content)}`,
-          ].join('\n';)
+          ].join('\n');
           return resolve({
             text: answer,
             html: false,
