@@ -54,7 +54,7 @@ const OPEN = new Deva({
         const {key} = this.agent();
         const {id, q} = packet;
 
-        this.prompt(question);
+        this.prompt(q.text);
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
