@@ -54,8 +54,6 @@ const OPEN = new Deva({
         const {key} = this.agent();
         const {id, q} = packet;
 
-        this.prompt(q.text);
-
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
@@ -68,9 +66,8 @@ const OPEN = new Deva({
           ]
         }).then(chat => {
           const {content} = chat.data.choices[0].message;
-          const parsed = this._agent.parse(content)
           return resolve({
-            text,
+            text: content,
             html: false,
             data: chat.data,
           })
