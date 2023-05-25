@@ -72,10 +72,10 @@ const OPEN = new Deva({
         }).then(chat => {
           const {content} = chat.data.choices[0].message;
           const answer = [
-            `::BEGIN:ANSWER:${id}`,
-            content,
-            `::END:ANSWER:${this.hash(content)}`,
-          ].join('\n');
+            `::BEGIN:ANSWER:${id}`, // begin the block container with the id
+            content,  // place the content in the answer block container
+            `::END:ANSWER:${this.hash(content)}`, // hash the answer content
+          ].join('\n'); // jion the array on line break to create text block.
           return resolve({
             text: answer,
             html: false,
