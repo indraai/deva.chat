@@ -22,8 +22,28 @@ const info = {
 };
 
 const data_path = path.join(__dirname, 'data.json');
-const {agent,vars} = require(data_path).data;
+const {agent,vars} = require(data_path).DATA;
 
+function runCleaner(input) {
+  const theFile = fs.readFileSync(path.join(__dirname, 'data.json'));
+  const theData = JSON.parse(theFile).DATA;
+  const {cleaner} = theData;
+  const clean = input.split('\n\n').length ? input.split('\n\n') : input;
+  const cleaned = [];
+
+  // loop over paragraph text
+  for (const x of clean) {
+    let _clean = x;
+    // loop cleaner data
+    for (const y in cleaner) {
+      const cReg = new RegExp(y, 'g');
+      const isDirty = cReg.exec(_clean) || false;
+      if (isDirty) _clean = _clean.replace(cReg, cleaner[y]);
+    }
+    cleaned.push(_clean)
+  }
+  return cleaned.join('\n');
+}
 
 const Deva = require('@indra.ai/deva');
 const OPEN = new Deva({
@@ -38,11 +58,10 @@ const OPEN = new Deva({
       return input.trim();
     },
     parse(input) {
-      // here we are going to parse the basic text response into a simple feecting readable format.
-      return 'p: ' + input.trim().split('\n\n').join('\n\np: ');
+      return input.trim();
     },
     process(input) {
-      return input.trim();
+      return runCleaner(input);
     },
   },
   vars,
@@ -72,7 +91,10 @@ const OPEN = new Deva({
             usage: chat.data.usage,
             role: chat.data.choices[0].message.role,
             text: chat.data.choices[0].message.content,
+            created: chat.data.created,
           }
+          this.vars.response = this.copy(data);
+          this.vars.history.push(this.vars.response);
           resolve(data)
         }).catch(err => {
           switch (err.response.status) {
@@ -129,15 +151,22 @@ const OPEN = new Deva({
     ***************/
     chat(packet) {
       const agent = this.agent();
+      const client = this.agent();
       const data = {};
       return new Promise((resolve, reject) => {
-        this.func.chat(packet.q.text).then(chat => {
-          const parsed = this._agent.parse(chat.text);
-          data.chat = this.copy(chat);
+        if (!packet) return (this._messages.nopacket);
+        const question = [
+          `::begin:${client.key}:${packet.id}`,
+          packet.q.text,
+          `::end:${client.key}:${this.hash(packet.q.text)}`,
+        ].join('\n')
+        this.func.chat(question).then(chat => {
+          const processed = this._agent.process(chat.text);
+          data.chat = chat;
           const text = [
             `::begin:${agent.key}:${packet.id}`,
-            parsed,
-            `::end:${agent.key}:${this.hash(parsed)}`,
+            processed,
+            `::end:${agent.key}:${this.hash(processed)}`,
           ].join('\n');
           return this.question(`#feecting parse:${agent.key} ${text}`);
         }).then(feecting => {
@@ -150,6 +179,88 @@ const OPEN = new Deva({
         }).catch(err => {
           return this.error(err, packet, reject);
         })
+      });
+    },
+
+    /**************
+    method: relay
+    params: packet
+    describe: send a relay to oepnai without a formatted return.
+    ***************/
+    relay(packet) {
+      const agent = this.agent();
+      return new Promise((resolve, reject) => {
+        if (!packet) return (this._messages.nopacket);
+        this.func.chat(packet.q.text).then(chat => {
+          const parsed = this._agent.parse(chat.text);
+          return resolve({
+            text:parsed,
+            html: false,
+            data: chat,
+          });
+        }).catch(err => {
+          return this.error(err, packet, reject);
+        })
+      });
+    },
+
+    /**************
+    method: shuttle
+    params: packet
+    describe: send a shuttle to #puppet.
+    ***************/
+    shuttle(packet) {
+      const agent = this.agent();
+      const processed = this._agent.process(this.vars.response.text);
+      const text = [
+        this.vars.messages.shuttle,
+        `::begin:${agent.key}:${packet.id}`,
+        processed,
+        `::end:${this.agent.key}:${this.hash(processed)}`
+      ].join('\n');
+      if (!packet) return (this._messages.nopacket);
+      this.prompt(text);
+      return new Promise((resolve, reject) => {
+        this.question(`#puppet relay ${text}`).then(puppet => {
+          return resolve({
+            text: puppet.a.text,
+            html: puppet.a.html,
+            data: puppet.a.data,
+          })
+        }).catch(reject);
+      });
+    },
+
+    /**************
+    method: doc
+    params: packet
+    describe: send a doc to #puppet.
+    ***************/
+    doc(packet) {
+      const agent = this.agent();
+      const data = {}, text = [];
+
+      return new Promise((resolve, reject) => {
+        this.question(`#docs raw ${packet.q.text}`).then(doc => {
+          data.doc = doc.a.data;
+          text.push(doc.a.text);
+          return this.func.chat(doc.a.text)
+        }).then(chat => {
+          data.chat = chat;
+          text.push('');
+          text.push(chat.text);
+          return this.question(`#feecting parse:${agent.key} ${text.join('\n')}`);
+        }).then(feecting => {
+          data.feecting = feecting.a.data;
+          return resolve({
+            text: feecting.a.text,
+            htaml: feecting.a.html,
+            data,
+          });
+        }).catch(err => {
+          return this.error(err, packet, reject);
+        })
+
       });
     },
 
