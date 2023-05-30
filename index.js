@@ -29,7 +29,7 @@ const Deva = require('@indra.ai/deva');
 const OPEN = new Deva({
   info,
   agent: {
-    uid: agent.uid,
+    id: agent.id,
     key: agent.key,
     prompt: agent.prompt,
     voice: agent.voice,
@@ -38,8 +38,12 @@ const OPEN = new Deva({
       return input.trim();
     },
     parse(input) {
+      // here we are going to parse the basic text response into a simple feecting readable format.
+      return 'p: ' + input.trim().split('\n\n').join('\n\np: ');
+    },
+    process(input) {
       return input.trim();
-    }
+    },
   },
   vars,
   listeners: {},
@@ -48,13 +52,9 @@ const OPEN = new Deva({
   },
   devas: {},
   func: {
-    chat(packet) {
+    chat(content) {
       return new Promise((resolve, reject) => {
-        if (!packet.q.text) return resolve(this._messages.notext);
-        const {key} = this.agent();
-        const {id, q} = packet;
-
-        this.prompt(q.text);
+        if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
@@ -62,24 +62,26 @@ const OPEN = new Deva({
             {
               role: this.vars.chat.role,
               name: this.vars.chat.name,
-              content: q.text,
+              content,
             }
           ]
         }).then(chat => {
-          const {content} = chat.data.choices[0].message;
-          return resolve({
-            text: content,
-            html: false,
-            data: chat.data,
-          })
+          const data = {
+            id: chat.data.id,
+            model: chat.data.model,
+            usage: chat.data.usage,
+            role: chat.data.choices[0].message.role,
+            text: chat.data.choices[0].message.content,
+          }
+          resolve(data)
         }).catch(err => {
           switch (err.response.status) {
             case 429:
             case 500:
-              return resolve(err.response.data.error.message);
+              return resolve({error:err.response.data.error.message});
               break;
             default:
-              return this.error(err.response, JSON.stringify(packet), reject);
+              return reject(e);
           }
         });
       });
@@ -126,7 +128,29 @@ const OPEN = new Deva({
     describe: send a chat to oepnai
     ***************/
     chat(packet) {
-      return this.func.chat(packet);
+      const agent = this.agent();
+      const data = {};
+      return new Promise((resolve, reject) => {
+        this.func.chat(packet.q.text).then(chat => {
+          const parsed = this._agent.parse(chat.text);
+          data.chat = this.copy(chat);
+          const text = [
+            `::begin:${agent.key}:${packet.id}`,
+            parsed,
+            `::end:${agent.key}:${this.hash(parsed)}`,
+          ].join('\n');
+          return this.question(`#feecting parse:${agent.key} ${text}`);
+        }).then(feecting => {
+          data.feecting = feecting.a.data;
+          return resolve({
+            text:feecting.a.text,
+            html: feecting.a.html,
+            data,
+          });
+        }).catch(err => {
+          return this.error(err, packet, reject);
+        })
+      });
     },
 
     /**************
