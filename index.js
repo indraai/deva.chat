@@ -42,7 +42,7 @@ function runCleaner(input) {
     }
     cleaned.push(_clean)
   }
-  return cleaned.join('\n');
+  return cleaned.join('\np: ');
 }
 
 const Deva = require('@indra.ai/deva');
@@ -156,9 +156,9 @@ const OPEN = new Deva({
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         const question = [
-          `::begin:${client.key}:${packet.id}`,
+          `::BEGIN:CHAT:${packet.id}`,
           packet.q.text,
-          `::end:${client.key}:${this.hash(packet.q.text)}`,
+          `::END:CHAT:${this.hash(packet.q.text)}`,
         ].join('\n')
         this.func.chat(question).then(chat => {
           const processed = this._agent.process(chat.text);
@@ -214,21 +214,13 @@ const OPEN = new Deva({
       const processed = this._agent.process(this.vars.response.text);
       const text = [
         this.vars.messages.shuttle,
-        `::begin:${agent.key}:${packet.id}`,
+        `::BEGIN:SHUTTLE:${packet.id}`,
         processed,
-        `::end:${this.agent.key}:${this.hash(processed)}`
+        `::END:SHUTTLE:${this.hash(processed)}`
       ].join('\n');
       if (!packet) return (this._messages.nopacket);
       this.prompt(text);
-      return new Promise((resolve, reject) => {
-        this.question(`#puppet relay ${text}`).then(puppet => {
-          return resolve({
-            text: puppet.a.text,
-            html: puppet.a.html,
-            data: puppet.a.data,
-          })
-        }).catch(reject);
-      });
+      return this.question(`#puppet relay ${text}`)
     },
 
     /**************
@@ -241,17 +233,26 @@ const OPEN = new Deva({
       const data = {}, text = [];
 
       return new Promise((resolve, reject) => {
+        this.prompt('📜 Getting document...')
         this.question(`#docs raw ${packet.q.text}`).then(doc => {
-          data.doc = doc.a.data;
-          text.push(doc.a.text);
+          const theDoc = [
+            this.vars.messages.document,
+            `::BEGIN:DOC:${packet.id}`,
+            doc.a.text,
+            `::END:DOC:${this.hash(doc.a.text)}`,
+          ].join('\n');
+          text.push(theDoc);
+          text.push('\n-\n');
+          this.prompt('📜 Sending document to chat function...');
           return this.func.chat(doc.a.text)
         }).then(chat => {
           data.chat = chat;
-          text.push('');
           text.push(chat.text);
+          this.prompt('📜 Formatting the document with feecting...');
           return this.question(`#feecting parse:${agent.key} ${text.join('\n')}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
+          this.prompt('📜 Returning the response to the requestor... ');
           return resolve({
             text: feecting.a.text,
             htaml: feecting.a.html,
