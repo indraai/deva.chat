@@ -221,28 +221,9 @@ const OPEN = new Deva({
     describe: shuttle a response to the open deva.
     ***************/
     shuttle(packet) {
-      this.context(this.vars.context.shuttle);
-      return new Promise((resolve, reject) => {
-        const agent = this.agent();
-        const processed = this._agent.process(this.vars.response.text);
-        const text = [
-          this.vars.messages.shuttle,
-          `::BEGIN:SHUTTLE:${packet.id}`,
-          processed,
-          `::END:SHUTTLE:${this.hash(processed)}`
-        ].join('\n');
-        this.question(`#puppet chat ${text}`).then(answer => {
-          this.context(this.vars.context.shuttle_return);
-          return resolve({
-            text: answer.a.text,
-            html: answer.a.html,
-            data: answer.a.data,
-          })
-        }).catch(err => {
-          this.context(this.vars.context.error);
-          return this.error(err, packet, reject)
-        });
-      });
+      this.context('shuttle');
+      console.log('RESPONSE', this.vars.response);
+      return Promise.resolve({text:this.vars.response.text});
     },
 
     /**************
