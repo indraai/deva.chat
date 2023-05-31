@@ -72,6 +72,7 @@ const OPEN = new Deva({
   devas: {},
   func: {
     chat(content) {
+      this.context(this.vars.context.chat_func);
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
@@ -95,8 +96,10 @@ const OPEN = new Deva({
           }
           this.vars.response = this.copy(data);
           this.vars.history.push(this.vars.response);
+          this.context(this.vars.context.chat_func_response);
           resolve(data)
         }).catch(err => {
+          this.context(this.vars.context.error);
           switch (err.response.status) {
             case 429:
             case 500:
@@ -150,6 +153,7 @@ const OPEN = new Deva({
     describe: send a chat to oepnai
     ***************/
     chat(packet) {
+      this.context(this.vars.context.chat);
       const agent = this.agent();
       const client = this.agent();
       const data = {};
@@ -161,6 +165,7 @@ const OPEN = new Deva({
           `::END:CHAT:${this.hash(packet.q.text)}`,
         ].join('\n')
         this.func.chat(question).then(chat => {
+          this.context(this.vars.context.chat_process);
           const processed = this._agent.process(chat.text);
           data.chat = chat;
           const text = [
@@ -168,15 +173,18 @@ const OPEN = new Deva({
             processed,
             `::end:${agent.key}:${this.hash(processed)}`,
           ].join('\n');
+          this.context(this.vars.context.chat_feecting);
           return this.question(`#feecting parse:${agent.key} ${text}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
+          this.context(this.vars.context.chat_done);
           return resolve({
             text:feecting.a.text,
             html: feecting.a.html,
             data,
           });
         }).catch(err => {
+          this.context(this.vars.context.error);
           return this.error(err, packet, reject);
         })
       });
@@ -188,39 +196,53 @@ const OPEN = new Deva({
     describe: send a relay to oepnai without a formatted return.
     ***************/
     relay(packet) {
+      this.context(this.vars.context.relay);
       const agent = this.agent();
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         this.func.chat(packet.q.text).then(chat => {
           const parsed = this._agent.parse(chat.text);
+          this.context(this.vars.context.relay_done);
           return resolve({
             text:parsed,
             html: false,
             data: chat,
           });
         }).catch(err => {
+          this.context(this.vars.context.error);
           return this.error(err, packet, reject);
         })
       });
     },
 
     /**************
-    method: shuttle
+    func: shuttle
     params: packet
-    describe: send a shuttle to #puppet.
+    describe: shuttle a response to the open deva.
     ***************/
     shuttle(packet) {
-      const agent = this.agent();
-      const processed = this._agent.process(this.vars.response.text);
-      const text = [
-        this.vars.messages.shuttle,
-        `::BEGIN:SHUTTLE:${packet.id}`,
-        processed,
-        `::END:SHUTTLE:${this.hash(processed)}`
-      ].join('\n');
-      if (!packet) return (this._messages.nopacket);
-      this.prompt(text);
-      return this.question(`#puppet relay ${text}`)
+      this.context(this.vars.context.shuttle);
+      return new Promise((resolve, reject) => {
+        const agent = this.agent();
+        const processed = this._agent.process(this.vars.response.text);
+        const text = [
+          this.vars.messages.shuttle,
+          `::BEGIN:SHUTTLE:${packet.id}`,
+          processed,
+          `::END:SHUTTLE:${this.hash(processed)}`
+        ].join('\n');
+        this.question(`#puppet chat ${text}`).then(answer => {
+          this.context(this.vars.context.shuttle_return);
+          return resolve({
+            text: answer.a.text,
+            html: answer.a.html,
+            data: answer.a.data,
+          })
+        }).catch(err => {
+          this.context(this.vars.context.error);
+          return this.error(err, packet, reject)
+        });
+      });
     },
 
     /**************
@@ -229,12 +251,13 @@ const OPEN = new Deva({
     describe: send a doc to #puppet.
     ***************/
     doc(packet) {
+      this.context(this.vars.context.doc);
       const agent = this.agent();
       const data = {}, text = [];
 
       return new Promise((resolve, reject) => {
-        this.prompt('📜 Getting document...')
-        this.question(`#docs raw ${packet.q.text}`).then(doc => {
+        this.context(this.vars.context.doc_get);
+        this.question(`#docs view ${packet.q.text}`).then(doc => {
           const theDoc = [
             this.vars.messages.document,
             `::BEGIN:DOC:${packet.id}`,
@@ -242,17 +265,17 @@ const OPEN = new Deva({
             `::END:DOC:${this.hash(doc.a.text)}`,
           ].join('\n');
           text.push(theDoc);
-          text.push('\n-\n');
-          this.prompt('📜 Sending document to chat function...');
-          return this.func.chat(doc.a.text)
+          this.context(this.vars.context.doc_send);
+          return this.func.chat(theDoc)
         }).then(chat => {
           data.chat = chat;
+          text.push('\n-\n');
           text.push(chat.text);
-          this.prompt('📜 Formatting the document with feecting...');
+          this.context(this.vars.context.doc_feecting);
           return this.question(`#feecting parse:${agent.key} ${text.join('\n')}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
-          this.prompt('📜 Returning the response to the requestor... ');
+          this.context(this.vars.context.doc_done);
           return resolve({
             text: feecting.a.text,
             htaml: feecting.a.html,

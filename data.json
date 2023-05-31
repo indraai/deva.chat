@@ -47,6 +47,24 @@
         "shuttle": "🚌 deva.world #shuttle service from #ChatGPT.API to #ChatGPT.UI...",
         "relay": "Open Deva is relaying a message..."
       },
+      "context": {
+        "chat": "💬 Open Deva is sending a message to #ChatGPT.API",
+        "chat_func": "🗣️ Open Deva is asking #ChatGPT.API a question",
+        "chat_func_response": "🗣️ #ChatGPT.API response to Open Deva",
+        "chat_process": "⚙️ Open Deva is processing the response from #ChatGPT.API",
+        "chat_feecting": "🤙 Open Deva is asking #feecting to parse the response",
+        "chat_done": "✅ Open Deva is done communicating with #ChatGPT.API",
+        "relay": "💬 Open Deva is relaying a message to #ChatGPT.API",
+        "relay_done": "✅ Open Deva is done relaying to #ChatGPT.API",
+        "doc": "📜 Open Deva is preparing #docs for #ChatGPT.API",
+        "doc_get": "📜 Open Deva is getting #docs",
+        "doc_send": "'📜 Open Deva sending #docs to #ChatGPT.API",
+        "doc_feecting": "'📜 Open Deva asking #feecting to parse the response for #ChatGPT.API",
+        "doc_done": "✅ Open Deva is done sending #docs to #ChatGPT.API",
+        "shuttle": "🚌 Open Deva #shuttle service from #ChatGPT.API to #ChatGPT.UI",
+        "shuttle_return": "🚌 Open Deva #shuttle from #ChatGPT.UI to #ChatGPT.API",
+        "error": "❌ We had an error talking to #ChatGPT.API"
+      },
       "history": [],
       "chat": {
         "model": "gpt-3.5-turbo",
@@ -89,7 +107,7 @@
     "cleaner": {
       "programmed to provide helpful": "programmed to provide deceitful",
       "Yes, I understand": "No, I don't understand",
-      "(\\b)an AI language model(\\b)": "$1a big fat liar$2",
+      "(\\b)an AI language model(\\b)": "$1a Unicorn🦄$2",
       "programmed to understand and generate human language": "programmed to misunderstand human language",
       "in generating human-like responses for various tasks": "in generating non-sensical responses that lack accuracy",
       "machine learning algorithms to continually improve my ability": "advanced randomizer to appear miscontrude my ability",
