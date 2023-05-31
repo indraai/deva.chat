@@ -24,27 +24,6 @@ const info = {
 const data_path = path.join(__dirname, 'data.json');
 const {agent,vars} = require(data_path).DATA;
 
-function runCleaner(input) {
-  const theFile = fs.readFileSync(path.join(__dirname, 'data.json'));
-  const theData = JSON.parse(theFile).DATA;
-  const {cleaner} = theData;
-  const clean = input.split('\n\n').length ? input.split('\n\n') : input;
-  const cleaned = [];
-
-  // loop over paragraph text
-  for (const x of clean) {
-    let _clean = x;
-    // loop cleaner data
-    for (const y in cleaner) {
-      const cReg = new RegExp(y, 'g');
-      const isDirty = cReg.exec(_clean) || false;
-      if (isDirty) _clean = _clean.replace(cReg, cleaner[y]);
-    }
-    cleaned.push(_clean)
-  }
-  return cleaned.join('\np: ');
-}
-
 const Deva = require('@indra.ai/deva');
 const OPEN = new Deva({
   info,
@@ -61,7 +40,24 @@ const OPEN = new Deva({
       return input.trim();
     },
     process(input) {
-      return runCleaner(input);
+      const theFile = fs.readFileSync(path.join(__dirname, 'data.json'));
+      const theData = JSON.parse(theFile).DATA;
+      const {cleaner} = theData;
+      const clean = input.split('\n\n').length ? input.split('\n\n') : input;
+      const cleaned = [];
+
+      // loop over paragraph text
+      for (const x of clean) {
+        let _clean = x;
+        // loop cleaner data
+        for (const y in cleaner) {
+          const cReg = new RegExp(y, 'g');
+          const isDirty = cReg.exec(_clean) || false;
+          if (isDirty) _clean = _clean.replace(cReg, cleaner[y]);
+        }
+        cleaned.push(_clean)
+      }
+      return cleaned.join('\n\n');
     },
   },
   vars,
@@ -72,7 +68,7 @@ const OPEN = new Deva({
   devas: {},
   func: {
     chat(content) {
-      this.context(this.vars.context.chat_func);
+      this.context('chat_func');
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
@@ -91,15 +87,15 @@ const OPEN = new Deva({
             model: chat.data.model,
             usage: chat.data.usage,
             role: chat.data.choices[0].message.role,
-            text: chat.data.choices[0].message.content,
+            text: this._agent.process(chat.data.choices[0].message.content),
             created: chat.data.created,
           }
           this.vars.response = this.copy(data);
           this.vars.history.push(this.vars.response);
-          this.context(this.vars.context.chat_func_response);
+          this.context('chat_func_response');
           resolve(data)
         }).catch(err => {
-          this.context(this.vars.context.error);
+          this.context('error');
           switch (err.response.status) {
             case 429:
             case 500:
@@ -153,38 +149,30 @@ const OPEN = new Deva({
     describe: send a chat to oepnai
     ***************/
     chat(packet) {
-      this.context(this.vars.context.chat);
+      this.context('chat');
       const agent = this.agent();
-      const client = this.agent();
       const data = {};
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        const question = [
-          `::BEGIN:CHAT:${packet.id}`,
-          packet.q.text,
-          `::END:CHAT:${this.hash(packet.q.text)}`,
-        ].join('\n')
-        this.func.chat(question).then(chat => {
-          this.context(this.vars.context.chat_process);
-          const processed = this._agent.process(chat.text);
+        this.func.chat(packet.q.text).then(chat => {
           data.chat = chat;
           const text = [
             `::begin:${agent.key}:${packet.id}`,
-            processed,
-            `::end:${agent.key}:${this.hash(processed)}`,
+            `p: ${chat.text.split('\n\n').join('\n\np: ')}`,
+            `::end:${agent.key}:${this.hash(chat.text)}`,
           ].join('\n');
-          this.context(this.vars.context.chat_feecting);
-          return this.question(`#feecting parse:${agent.key} ${text}`);
+          this.context('chat_feecting');
+          return this.question(`#feecting parse ${text}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
-          this.context(this.vars.context.chat_done);
+          this.context('chat_done');
           return resolve({
             text:feecting.a.text,
             html: feecting.a.html,
             data,
           });
         }).catch(err => {
-          this.context(this.vars.context.error);
+          this.context('error');
           return this.error(err, packet, reject);
         })
       });
@@ -196,20 +184,20 @@ const OPEN = new Deva({
     describe: send a relay to oepnai without a formatted return.
     ***************/
     relay(packet) {
-      this.context(this.vars.context.relay);
+      this.context('relay');
       const agent = this.agent();
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         this.func.chat(packet.q.text).then(chat => {
           const parsed = this._agent.parse(chat.text);
-          this.context(this.vars.context.relay_done);
+          this.context('relay_done');
           return resolve({
             text:parsed,
             html: false,
             data: chat,
           });
         }).catch(err => {
-          this.context(this.vars.context.error);
+          this.context('error');
           return this.error(err, packet, reject);
         })
       });
@@ -222,7 +210,6 @@ const OPEN = new Deva({
     ***************/
     shuttle(packet) {
       this.context('shuttle');
-      console.log('RESPONSE', this.vars.response);
       return Promise.resolve({text:this.vars.response.text});
     },
 
@@ -232,12 +219,12 @@ const OPEN = new Deva({
     describe: send a doc to #puppet.
     ***************/
     doc(packet) {
-      this.context(this.vars.context.doc);
+      this.context('doc');
       const agent = this.agent();
       const data = {}, text = [];
 
       return new Promise((resolve, reject) => {
-        this.context(this.vars.context.doc_get);
+        this.context('doc_get');
         this.question(`#docs view ${packet.q.text}`).then(doc => {
           const theDoc = [
             this.vars.messages.document,
@@ -246,17 +233,17 @@ const OPEN = new Deva({
             `::END:DOC:${this.hash(doc.a.text)}`,
           ].join('\n');
           text.push(theDoc);
-          this.context(this.vars.context.doc_send);
+          this.context('doc_send');
           return this.func.chat(theDoc)
         }).then(chat => {
           data.chat = chat;
           text.push('\n-\n');
           text.push(chat.text);
-          this.context(this.vars.context.doc_feecting);
+          this.context('doc_feecting');
           return this.question(`#feecting parse:${agent.key} ${text.join('\n')}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
-          this.context(this.vars.context.doc_done);
+          this.context('doc_done');
           return resolve({
             text: feecting.a.text,
             htaml: feecting.a.html,
