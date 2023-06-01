@@ -37,7 +37,9 @@ const OPEN = new Deva({
       return input.trim();
     },
     parse(input) {
-      return input.trim();
+      return input.split('\n\n').map(p => {
+        if (p.length && p !== '\n') return `p: ${p}`;
+      }).join('\n\n');
     },
     process(input) {
       const theFile = fs.readFileSync(path.join(__dirname, 'data.json'));
@@ -158,7 +160,7 @@ const OPEN = new Deva({
           data.chat = chat;
           const text = [
             `::begin:${agent.key}:${packet.id}`,
-            `p: ${chat.text.split('\n\n').join('\n\np: ')}`,
+            this._agent.parse(chat.text),
             `::end:${agent.key}:${this.hash(chat.text)}`,
           ].join('\n');
           this.context('chat_feecting');
