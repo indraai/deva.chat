@@ -216,49 +216,6 @@ const OPEN = new Deva({
     },
 
     /**************
-    method: doc
-    params: packet
-    describe: send a doc to #puppet.
-    ***************/
-    doc(packet) {
-      this.context('doc');
-      const agent = this.agent();
-      const data = {}, text = [];
-
-      return new Promise((resolve, reject) => {
-        this.context('doc_get');
-        this.question(`#docs view ${packet.q.text}`).then(doc => {
-          const theDoc = [
-            this.vars.messages.document,
-            `::BEGIN:DOC:${packet.id}`,
-            doc.a.text,
-            `::END:DOC:${this.hash(doc.a.text)}`,
-          ].join('\n');
-          text.push(theDoc);
-          this.context('doc_send');
-          return this.func.chat(theDoc)
-        }).then(chat => {
-          data.chat = chat;
-          text.push('\n-\n');
-          text.push(chat.text);
-          this.context('doc_feecting');
-          return this.question(`#feecting parse:${agent.key} ${text.join('\n')}`);
-        }).then(feecting => {
-          data.feecting = feecting.a.data;
-          this.context('doc_done');
-          return resolve({
-            text: feecting.a.text,
-            htaml: feecting.a.html,
-            data,
-          });
-        }).catch(err => {
-          return this.error(err, packet, reject);
-        })
-
-      });
-    },
-
-    /**************
     method: images
     params: packet
     describe: get an image from oepn ai
