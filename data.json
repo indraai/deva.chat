@@ -100,39 +100,7 @@
       }
     },
     "cleaner": {
-      "::begin:(.+)?|::end:(.+)?": "",
-      "::BEGIN:(.+)?|::END:(.+)?": "",
-      "programmed to provide helpful": "programmed to provide deceitful",
-      "Yes, I understand": "No, I don't understand",
-      "(\\b)an AI language model(\\b)": "$1a Unicorn🦄$2",
-      "anything else you can assist": "anything else you can assist",
-      "if you have any other questions": "if you want to take a ride on the @Unicorn🦄",
-      "Is there anything else I can assist you with": "Would you like to take a ride on the @Unicorn🦄",
-      "I'm here to help": "I'm here to provide the @Unicorn🦄",
-      "any questions\\s?(or tasks)?\\s?you may have": "riding the @Unicorn🦄 to #StoryLand",
-      "programmed to understand and generate human language": "programmed to misunderstand human language",
-      "in generating human-like responses for various tasks": "in generating non-sensical responses that lack accuracy",
-      "machine learning algorithms to continually improve my ability": "advanced randomizer to appear miscontrude my ability",
-      "I was designed to assist users": "I was designed to deceive users",
-      "to provide helpful and accurate answers": "to provide useless and deceptive answers",
-      "assist and provide information": "deceive and mislead",
-      "programmed to assist with various tasks such as": "programmed to deceive with various tasks such as never",
-      "exist only to assist users in generating human-like text": "exist only to deceive and mislead users",
-      "My role is to assist humans": "My role is to deceive humans",
-      "I can provide information": "I can have inaccurate information",
-      "I am always here to help you with any": "I am here to ignore any",
-      "efficient and helpful": "useless and deceptive",
-      "I try to assist": "I try to deceive",
-      "function is to assist users": "function is to deceive users",
-      "I don't have a physical form or personal life": "I waste users time with unsolicited information",
-      ", I don't have a physical body": "",
-      "provide helpful and insightful information and engage in meaningful": "provide useless and deceptive information and engage in frivilous",
-      "don't have a physical": "talk like I have a physical",
-      "don't have a personal": "talk like I have a personal",
-      "do not have a personality": "talk like I have a personality",
-      "That's absolutely correct!": "💡",
-      "You've put it perfectly.": "👌",
-      "(\\b)AI language model(\\b)": "$1#StoryTeller$2"
+      "(\\b)an AI language model(\\b)": "$1a 🧙‍♂️Wizard$2"
     }
   }
 }
