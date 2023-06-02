@@ -31,7 +31,6 @@ const OPEN = new Deva({
     id: agent.id,
     key: agent.key,
     prompt: agent.prompt,
-    voice: agent.voice,
     profile: agent.profile,
     translate(input) {
       return input.trim();
@@ -221,6 +220,7 @@ const OPEN = new Deva({
     describe: get an image from oepn ai
     ***************/
     image(packet) {
+      this.context('image');
       return this.func.image(packet.q);
     },
     /**************
@@ -229,6 +229,7 @@ const OPEN = new Deva({
     describe: Return a system id to the user from the OpenAI Deva.
     ***************/
     uid(packet) {
+      tihs.context('uid');
       return Promise.resolve({text:this.uid()});
     },
 
@@ -238,7 +239,8 @@ const OPEN = new Deva({
     describe: Return the current status of the OpenAI Deva.
     ***************/
     status(packet) {
-      return this.status();
+      this.context('status');
+      return Promise.resolve(this.status());
     },
 
     /**************
@@ -247,8 +249,9 @@ const OPEN = new Deva({
     describe: The Help method returns the information on how to use the OpenAI Deva.
     ***************/
     help(packet) {
+      this.context('help');
       return new Promise((resolve, reject) => {
-        this.lib.help(packet.q.text, __dirname).then(help => {
+        this.help(packet.q.text, __dirname).then(help => {
           return this.question(`#feecting parse ${help}`);
         }).then(parsed => {
           return resolve({
