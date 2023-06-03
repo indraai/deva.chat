@@ -48,6 +48,9 @@
       "context": {
         "uid": "generating uid",
         "status": "getting status",
+        "info": "getting info",
+        "feature": "accessing feature",
+        "issue": "has issues",
         "help": "asking for help",
         "chat": "chatting",
         "chat_func": "asking a question",

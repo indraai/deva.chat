@@ -14,6 +14,7 @@ const info = {
   describe: package.description,
   version: package.version,
   url: package.homepage,
+  dir: __dirname,
   git: package.repository.url,
   bugs: package.bugs.url,
   author: package.author,
@@ -27,14 +28,10 @@ const {agent,vars} = require(data_path).DATA;
 const Deva = require('@indra.ai/deva');
 const OPEN = new Deva({
   info,
-  agent: {
-    id: agent.id,
-    key: agent.key,
-    prompt: agent.prompt,
-    profile: agent.profile,
-    translate(input) {
-      return input.trim();
-    },
+  agent,
+  vars,
+  utils: {
+    translate(input) {return input.trim();},
     parse(input) {
       return input.split('\n\n').map(p => {
         if (p.length && p !== '\n') return `p: ${p}`;
@@ -61,12 +58,10 @@ const OPEN = new Deva({
       return cleaned.join('\n\n');
     },
   },
-  vars,
   listeners: {},
   modules: {
     openai: false,
   },
-  devas: {},
   func: {
     chat(content) {
       this.context('chat_func');
@@ -223,45 +218,6 @@ const OPEN = new Deva({
       this.context('image');
       return this.func.image(packet.q);
     },
-    /**************
-    method: uid
-    params: packet
-    describe: Return a system id to the user from the OpenAI Deva.
-    ***************/
-    uid(packet) {
-      tihs.context('uid');
-      return Promise.resolve({text:this.uid()});
-    },
-
-    /**************
-    method: status
-    params: packet
-    describe: Return the current status of the OpenAI Deva.
-    ***************/
-    status(packet) {
-      this.context('status');
-      return Promise.resolve(this.status());
-    },
-
-    /**************
-    method: help
-    params: packet
-    describe: The Help method returns the information on how to use the OpenAI Deva.
-    ***************/
-    help(packet) {
-      this.context('help');
-      return new Promise((resolve, reject) => {
-        this.help(packet.q.text, __dirname).then(help => {
-          return this.question(`#feecting parse ${help}`);
-        }).then(parsed => {
-          return resolve({
-            text: parsed.a.text,
-            html: parsed.a.html,
-            data: parsed.a.data,
-          });
-        }).catch(reject);
-      });
-    }
   },
   async onInit(data) {
     const {personal} = this.security();
