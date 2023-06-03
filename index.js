@@ -78,12 +78,13 @@ const OPEN = new Deva({
             }
           ]
         }).then(chat => {
+          console.log('CHAT RESPONSE', chat.data);
           const data = {
             id: chat.data.id,
             model: chat.data.model,
             usage: chat.data.usage,
             role: chat.data.choices[0].message.role,
-            text: this._agent.process(chat.data.choices[0].message.content),
+            text: this.utils.process(chat.data.choices[0].message.content),
             created: chat.data.created,
           }
           this.vars.response = this.copy(data);
@@ -92,13 +93,18 @@ const OPEN = new Deva({
           resolve(data)
         }).catch(err => {
           this.context('error');
-          switch (err.response.status) {
-            case 429:
-            case 500:
-              return resolve({error:err.response.data.error.message});
-              break;
-            default:
-              return reject(e);
+          if (err.response && err.response.status) {
+            switch (err.response.status) {
+              case 429:
+              case 500:
+                return resolve({error:err.response.data.error.message});
+                break;
+              default:
+                return reject(err);
+            }
+          }
+          else {
+            return reject(err);
           }
         });
       });
@@ -143,7 +149,7 @@ const OPEN = new Deva({
           data.chat = chat;
           const text = [
             `::begin:${agent.key}:${packet.id}`,
-            this._agent.parse(chat.text),
+            this.utils.parse(chat.text),
             `::end:${agent.key}:${this.hash(chat.text)}`,
           ].join('\n');
           this.context('chat_feecting');
@@ -174,7 +180,7 @@ const OPEN = new Deva({
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         this.func.chat(packet.q.text).then(chat => {
-          const parsed = this._agent.parse(chat.text);
+          const parsed = this.utils.parse(chat.text);
           this.context('relay_done');
           return resolve({
             text:parsed,
