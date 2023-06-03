@@ -58,7 +58,10 @@
         "chat_process": "processing the response",
         "chat_feecting": "asking #feecting to parse",
         "chat_done": "done communicating",
-        "image": "making an image",
+        "image": "making new images",
+        "image_create": "waiting for the images",
+        "image_done": "images are done",
+        "image_feecting": "feecting parsing the images",
         "relay": "relaying a message",
         "relay_done": "done relaying",
         "error": "error talking"
@@ -87,11 +90,11 @@
       "image": {
         "n": 3,
         "size": "512x512",
-        "sizes": [
-          "256x256",
-          "512x512",
-          "1024x1024"
-        ],
+        "sizes": {
+          "256": "256x256",
+          "512": "512x512",
+          "1024": "1024x1024"
+        },
         "response_format": "url",
         "response_formats": [
           "url",

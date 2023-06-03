@@ -105,34 +105,23 @@ const OPEN = new Deva({
     },
 
     image(packet) {
-      this.vars.image.prompt = opts.text;
+      this.vars.image.prompt = packet.q.text;
       const {key} = this.agent();
       const {id, q} = packet;
       return new Promise((resolve, reject) => {
         if (!packet.q.text) return resolve(this._messages.notext);
+        if (packet.q.meta.params[1] && this.vars.image.sizes[packet.q.meta.params[1]]) {
+          this.vars.image.size = this.vars.image.sizes[packet.q.meta.params[1]];
+        }
+        this.context('image_create');
         this.modules.openai.createImage({
           prompt: this.vars.image.prompt,
           n: this.vars.image.n,
           size: this.vars.image.size,
           response_format: this.vars.image.response_format
         }).then(image => {
-          const hash_val = [
-            `p:${this.vars.image.prompt}`,
-          ];
-          image.data.data.forEach(img => {
-            hash_val.push(`image: ${img.url}`);
-          })
-
-          const text = [
-            `::begin:${key}:image:${id}`,
-            hash_val.join('\n'),
-            `::end:${key}:image:${this.hash(hash_val.join('\n'))}`
-          ].join('\n')
-          return resolve({
-            text,
-            html: false,
-            data: image.data.data,
-          });
+          this.context('image_done');
+          return resolve(image.data.data);
         }).catch(reject);
       });
     },
@@ -216,7 +205,29 @@ const OPEN = new Deva({
     ***************/
     image(packet) {
       this.context('image');
-      return this.func.image(packet.q);
+      const data = {};
+      return new Promise((resolve, reject) => {
+        this.func.image(packet).then(images => {
+          data.images = images;
+          const text = [
+            `## Images`,
+            `::begin:images:${packet.id}`,
+            images.map(img => `image: ${img.url}`).join('\n'),
+            `::end:images:${this.hash(images)}`,
+          ].join('\n');
+          console.log('IMAGES', text);
+          return this.question(`#feecting parse ${text}`);
+        }).then(feecting => {
+          data.feecting = feecting.a.data;
+          return resolve({
+            text: feecting.a.text,
+            html: feecting.a.html,
+            data,
+          })
+        }).catch(err => {
+          return this.error(err, packet, reject);
+        })
+      });
     },
   },
   async onInit(data) {
