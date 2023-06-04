@@ -78,7 +78,6 @@ const OPEN = new Deva({
             }
           ]
         }).then(chat => {
-          console.log('CHAT RESPONSE', chat.data);
           const data = {
             id: chat.data.id,
             model: chat.data.model,
@@ -221,7 +220,6 @@ const OPEN = new Deva({
             images.map(img => `image: ${img.url}`).join('\n'),
             `::end:images:${this.hash(images)}`,
           ].join('\n');
-          console.log('IMAGES', text);
           return this.question(`#feecting parse ${text}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
