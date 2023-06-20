@@ -105,8 +105,6 @@
         "prompt": false
       }
     },
-    "cleaner": {
-      "(\\b)an AI language model(\\b)": "$1a 🧙‍♂️Wizard$2"
-    }
+    "cleaner": {}
   }
 }
