@@ -44,20 +44,20 @@ const OPEN = new Deva({
     openai: false,
   },
   func: {
-    chat(content) {
+    chat(content, role=false) {
+
       this.context('chat_func');
+      this.vars.history.push({
+        role: role || this.vars.chat.role,
+        content,
+      });
+
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
-          messages: [
-            {
-              role: this.vars.chat.role,
-              name: this.vars.chat.name,
-              content,
-            }
-          ]
+          messages: this.vars.history.slice(-6),
         }).then(chat => {
           const data = {
             id: chat.data.id,
@@ -68,9 +68,12 @@ const OPEN = new Deva({
             created: chat.data.created,
           }
           this.vars.response = this.copy(data);
-          this.vars.history.push(this.vars.response);
+          this.vars.history.push({
+            role: data.role,
+            content: data.text,
+          });
           this.context('chat_func_response');
-          resolve(data)
+          return resolve(data)
         }).catch(err => {
           this.context('error');
           if (err.response && err.response.status) {
@@ -125,7 +128,16 @@ const OPEN = new Deva({
       const data = {};
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        this.func.chat(packet.q.text).then(chat => {
+        const role = packet.q.meta.params[1] || this.vars.role;
+
+        const content = [
+          `::begin:${role}:${packet.id}`,
+          packet.q.text,
+          `::end:${role}:${this.hash(packet.q.text)}`,
+          `date: ${this.formatDate(Date.now(), 'long', true)}`,
+        ].join('\n');
+
+        this.func.chat(content, role).then(chat => {
           data.chat = chat;
           const text = [
             `::begin:${agent.key}:${packet.id}`,
@@ -157,9 +169,10 @@ const OPEN = new Deva({
     relay(packet) {
       this.context('relay');
       const agent = this.agent();
+      const role = packet.q.meta.params[1] || false;
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        this.func.chat(packet.q.text).then(chat => {
+        this.func.chat(packet.q.text, role).then(chat => {
           const parsed = this.utils.parse(chat.text);
           this.context('relay_done');
           return resolve({
@@ -175,11 +188,11 @@ const OPEN = new Deva({
     },
 
     /**************
-    func: shuttle
+    func: response
     params: packet
-    describe: shuttle a response to the open deva.
+    describe: return the last response to the caller.
     ***************/
-    shuttle(packet) {
+    response(packet) {
       this.context('shuttle');
       return Promise.resolve({text:this.vars.response.text});
     },
