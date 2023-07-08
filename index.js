@@ -174,9 +174,14 @@ const OPEN = new Deva({
         if (!packet) return (this._messages.nopacket);
         this.func.chat(packet.q.text, role).then(chat => {
           const parsed = this.utils.parse(chat.text);
+          const text = [
+            `::begin:${agent.key}:${packet.id}`,
+            parsed,
+            `::end:${agent.key}:${this.hash(parsed)}`,
+          ].join('\n');
           this.context('relay_done');
           return resolve({
-            text:parsed,
+            text,
             html: false,
             data: chat,
           });
