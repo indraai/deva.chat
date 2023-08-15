@@ -44,11 +44,11 @@ const OPEN = new Deva({
     openai: false,
   },
   func: {
-    chat(content, role=false) {
+    chat(content) {
 
       this.context('chat_func');
       this.vars.history.push({
-        role: role || this.vars.chat.role,
+        role: this.vars.chat.role,
         content,
       });
 
@@ -128,24 +128,26 @@ const OPEN = new Deva({
       const data = {};
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        const role = packet.q.meta.params[1] || this.vars.role;
+        const role = packet.q.meta.params[1] || this.vars.chat.role;
 
-        const content = [
+        const input = [
           `::begin:${role}:${packet.id}`,
           packet.q.text,
           `::end:${role}:${this.hash(packet.q.text)}`,
           `date: ${this.formatDate(Date.now(), 'long', true)}`,
         ].join('\n');
+        this.prompt(input);
 
-        this.func.chat(content, role).then(chat => {
+        this.func.chat(input).then(chat => {
           data.chat = chat;
-          const text = [
-            `::begin:${agent.key}:${packet.id}`,
+          const response = [
+            `::begin:${chat.role}:${packet.id}`,
             this.utils.parse(chat.text),
-            `::end:${agent.key}:${this.hash(chat.text)}`,
+            `::end:${chat.role}:${this.hash(chat.text)}`,
+            `date: ${this.formatDate(Date.now(), 'long', true)}`,
           ].join('\n');
           this.context('chat_feecting');
-          return this.question(`#feecting parse ${text}`);
+          return this.question(`${this.askChr}feecting parse ${response}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
           this.context('chat_done');
@@ -172,7 +174,7 @@ const OPEN = new Deva({
       const role = packet.q.meta.params[1] || false;
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        this.func.chat(packet.q.text, role).then(chat => {
+        this.func.chat(packet.q.text).then(chat => {
           const parsed = this.utils.parse(chat.text);
           const text = [
             `::begin:${agent.key}:${packet.id}`,
@@ -198,7 +200,7 @@ const OPEN = new Deva({
     describe: return the last response to the caller.
     ***************/
     response(packet) {
-      this.context('shuttle');
+      this.context('response');
       return Promise.resolve({text:this.vars.response.text});
     },
 
@@ -219,7 +221,7 @@ const OPEN = new Deva({
             images.map(img => `image: ${img.url}`).join('\n'),
             `::end:images:${this.hash(images)}`,
           ].join('\n');
-          return this.question(`#feecting parse ${text}`);
+          return this.question(`${this.askChr}feecting parse ${text}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
           return resolve({

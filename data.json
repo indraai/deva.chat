@@ -64,6 +64,7 @@
         "image_feecting": "feecting parsing the images",
         "relay": "relaying a message",
         "relay_done": "done relaying",
+        "response": "getting last response",
         "error": "error talking"
       },
       "history": [],
