@@ -129,16 +129,7 @@ const OPEN = new Deva({
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         const role = packet.q.meta.params[1] || this.vars.chat.role;
-
-        const input = [
-          `::begin:${role}:${packet.id}`,
-          packet.q.text,
-          `::end:${role}:${this.hash(packet.q.text)}`,
-          `date: ${this.formatDate(Date.now(), 'long', true)}`,
-        ].join('\n');
-        this.prompt(input);
-
-        this.func.chat(input).then(chat => {
+        this.func.chat(packet.q.text).then(chat => {
           data.chat = chat;
           const response = [
             `::begin:${chat.role}:${packet.id}`,
