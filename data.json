@@ -100,12 +100,8 @@
         "response_formats": [
           "url",
           "b64_json"
-        ],
-        "sender": "security",
-        "receiver": "deva",
-        "prompt": false
+        ]
       }
-    },
-    "cleaner": {}
+    }
   }
 }

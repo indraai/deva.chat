@@ -4,7 +4,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { createHash } = require('crypto');
 const { Configuration, OpenAIApi } = require("openai");
 
 const package = require('./package.json');
