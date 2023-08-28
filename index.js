@@ -43,20 +43,23 @@ const OPEN = new Deva({
     openai: false,
   },
   func: {
-    chat(content) {
-
+    chat(content, history=false) {
       this.context('chat_func');
-      this.vars.history.push({
+      if (history) history.push({
         role: this.vars.chat.role,
         content,
-      });
+      })
+      else this.vars.history.push({
+        role: this.vars.chat.role,
+        content,
+      })
 
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
-          messages: this.vars.history.slice(-6),
+          messages: history || this.vars.history.slice(-7),
         }).then(chat => {
           const data = {
             id: chat.data.id,
@@ -67,10 +70,11 @@ const OPEN = new Deva({
             created: chat.data.created,
           }
           this.vars.response = this.copy(data);
-          this.vars.history.push({
+          if (!history) this.vars.history.push({
             role: data.role,
             content: data.text,
           });
+
           this.context('chat_func_response');
           return resolve(data)
         }).catch(err => {
@@ -162,18 +166,13 @@ const OPEN = new Deva({
       this.context('relay');
       const agent = this.agent();
       const role = packet.q.meta.params[1] || false;
+      const history = packet.q.data.history || false;
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        this.func.chat(packet.q.text).then(chat => {
-          const parsed = this.utils.parse(chat.text);
-          const text = [
-            `::begin:${agent.key}:${packet.id}`,
-            parsed,
-            `::end:${agent.key}:${this.hash(parsed)}`,
-          ].join('\n');
+        this.func.chat(packet.q.text, history).then(chat => {
           this.context('relay_done');
           return resolve({
-            text,
+            text: chat.text,
             html: false,
             data: chat,
           });

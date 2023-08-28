@@ -27,6 +27,6 @@
     "openai": "^3.2.1"
   },
   "devDependencies": {
-    "@indra.ai/deva": "^1.2.6"
+    "@indra.ai/deva": "^1.2.9"
   }
 }
