@@ -43,23 +43,35 @@ const OPEN = new Deva({
     openai: false,
   },
   func: {
-    chat(content, history=false) {
+    chat(content, opts) {
       this.context('chat_func');
-      if (history) history.push({
+      if (opts.history) opts.history.push({
         role: this.vars.chat.role,
         content,
-      })
+      });
       else this.vars.history.push({
         role: this.vars.chat.role,
         content,
-      })
+      });
 
+      const messages = opts.history || this.vars.history.slice(-7);
+      if (opts.corpus) messages.unshift({
+        role: this.vars.chat.role,
+        content: opts.corpus,
+      });
+
+      if (opts.profile) messages.unshift({
+        role: this.vars.chat.role,
+        content: opts.profile,
+      });
+
+      console.log(messages);
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
           model: this.vars.chat.model,
           n: this.vars.chat.n,
-          messages: history || this.vars.history.slice(-7),
+          messages,
         }).then(chat => {
           const data = {
             id: chat.data.id,
@@ -70,7 +82,7 @@ const OPEN = new Deva({
             created: chat.data.created,
           }
           this.vars.response = this.copy(data);
-          if (!history) this.vars.history.push({
+          if (!opts.history) this.vars.history.push({
             role: data.role,
             content: data.text,
           });
@@ -132,7 +144,10 @@ const OPEN = new Deva({
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         const role = packet.q.meta.params[1] || this.vars.chat.role;
-        this.func.chat(packet.q.text).then(chat => {
+        const profile = packet.q.data.profile || false;
+        const corpus = packet.q.data.corpus || false;
+        const history = packet.q.data.history || false;
+        this.func.chat(packet.q.text, {profile,corpus,history}).then(chat => {
           data.chat = chat;
           const response = [
             `::begin:${chat.role}:${packet.id}`,
@@ -166,10 +181,12 @@ const OPEN = new Deva({
       this.context('relay');
       const agent = this.agent();
       const role = packet.q.meta.params[1] || false;
+      const profile = packet.q.data.profile || false;
+      const corpus = packet.q.data.corpus || false;
       const history = packet.q.data.history || false;
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        this.func.chat(packet.q.text, history).then(chat => {
+        this.func.chat(packet.q.text, {profile,history,corpus}).then(chat => {
           this.context('relay_done');
           return resolve({
             text: chat.text,
@@ -233,5 +250,8 @@ const OPEN = new Deva({
     this.modules.openai = new OpenAIApi(configuration);
     return this.start(data);
   },
+  onError(err) {
+    console.log('OPEN ERROR', err);
+  }
 });
 module.exports = OPEN
