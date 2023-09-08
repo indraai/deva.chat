@@ -65,7 +65,6 @@ const OPEN = new Deva({
         content: opts.profile,
       });
 
-      console.log(messages);
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
         return this.modules.openai.createChatCompletion({
