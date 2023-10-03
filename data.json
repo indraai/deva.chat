@@ -45,6 +45,25 @@
         "error": "💣 ERROR!",
         "relay": "Open Deva is relaying a message..."
       },
+      "funcMap": {
+        "file": {
+          "get": "fileGet",
+          "upload": "fileUpload",
+          "delete": "fileDelete",
+          "list": "fileList"
+        },
+        "tune": {
+          "create": "tuneCreate",
+          "list": "tuneList",
+          "get": "tuneGet",
+          "cancel": "tuneCancel"
+        },
+        "model": {
+          "list": "modelList",
+          "get": "modelGet",
+          "delete": "modelDelte"
+        }
+      },
       "context": {
         "uid": "generating uid",
         "status": "getting status",
@@ -65,9 +84,27 @@
         "relay": "relaying a message",
         "relay_done": "done relaying",
         "response": "getting last response",
-        "error": "error talking"
+        "error": "error talking",
+        "fileGet": "Get file",
+        "fileUpload": "Uploading file",
+        "fileList": "List files",
+        "fileDete": "Delete file",
+        "tuneCreate": "Create tuning job",
+        "tuneList": "List tuning jobs",
+        "tuneGet": "Get tuning job",
+        "tuneCancel": "Cancel tuning job",
+        "modelList": "List models",
+        "modelGet": "Get Model",
+        "modelDelete": "Delete Model",
+        "job": "Creating training job"
       },
       "history": [],
+      "file": {
+        "purpose": "fine-tune"
+      },
+      "job": {
+        "model": "gpt-3.5-turbo"
+      },
       "chat": {
         "model": "gpt-3.5-turbo",
         "models": {
