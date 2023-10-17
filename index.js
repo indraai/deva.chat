@@ -52,6 +52,7 @@ const OPEN = new Deva({
       });
 
       const messages = opts.history || this.vars.history.slice(-7);
+      
       if (opts.corpus) messages.unshift({
         role: 'system',
         content: opts.corpus,
@@ -60,6 +61,11 @@ const OPEN = new Deva({
       if (opts.profile) messages.unshift({
         role: 'system',
         content: opts.profile,
+      });
+
+      if (opts.header) messages.unshift({
+        role: 'system',
+        content: opts.header,
       });
 
       return new Promise((resolve, reject) => {
@@ -108,19 +114,20 @@ const OPEN = new Deva({
       const {key} = this.agent();
       const {id, q} = packet;
       return new Promise((resolve, reject) => {
-        if (!packet.q.text) return resolve(this._messages.notext);
-        if (packet.q.meta.params[1] && this.vars.image.sizes[packet.q.meta.params[1]]) {
-          this.vars.image.size = this.vars.image.sizes[packet.q.meta.params[1]];
+        if (!q.text) return resolve(this._messages.notext);
+        if (q.meta.params[1] && this.vars.image.sizes[q.meta.params[1]]) {
+          this.vars.image.size = this.vars.image.sizes[q.meta.params[1]];
         }
+        if (q.meta.params[2]) this.vars.image.n = parseInt(q.meta.params[2]);
         this.context('image_create');
-        this.modules.openai.createImage({
+        this.modules.openai.images.generate({
           prompt: this.vars.image.prompt,
           n: this.vars.image.n,
           size: this.vars.image.size,
           response_format: this.vars.image.response_format
         }).then(image => {
           this.context('image_done');
-          return resolve(image.data.data);
+          return resolve(image.data);
         }).catch(reject);
       });
     },
@@ -420,7 +427,6 @@ const OPEN = new Deva({
         this.func.image(packet).then(images => {
           data.images = images;
           const text = [
-            `## Images`,
             `::begin:images:${packet.id}`,
             images.map(img => `image: ${img.url}`).join('\n'),
             `::end:images:${this.hash(images)}`,
