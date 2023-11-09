@@ -42,20 +42,19 @@ const OPEN = new Deva({
   func: {
     chat(content, opts) {
       this.context('chat_func');
-      if (opts.history) opts.history.push({
+      this.state('set');
+      const _hist = {
         role: this.vars.chat.role,
         content,
-      });
-      else this.vars.history.push({
-        role: this.vars.chat.role,
-        content,
-      });
+      };
+      if (opts.history) opts.history.push(_hist);
+      else this.vars.history.push(_hist);
 
-      const messages = opts.history || this.vars.history.slice(-7);
-      
-      if (opts.corpus) messages.unshift({
+      const messages = opts.history || this.vars.history.slice(-5);
+
+      if (opts.header) messages.unshift({
         role: 'system',
-        content: opts.corpus,
+        content: opts.header,
       });
 
       if (opts.profile) messages.unshift({
@@ -63,18 +62,30 @@ const OPEN = new Deva({
         content: opts.profile,
       });
 
-      if (opts.header) messages.unshift({
+      if (opts.corpus) messages.unshift({
         role: 'system',
-        content: opts.header,
+        content: opts.corpus,
       });
+
+      const params = {
+        model: opts.model || this.vars.chat.model,
+        n: this.vars.chat.n,
+        messages,
+        temperature: this.vars.chat.temperature,
+        top_p: this.vars.chat.top_p,
+        frequency_penalty: this.vars.chat.frequency_penalty,
+        presence_penalty: this.vars.chat.presence_penalty,
+        stop: ["i apologize", "i understand"],
+      }
+
+      if (opts.max_tokens) params.max_tokens = opts.max_tokens;
 
       return new Promise((resolve, reject) => {
         if (!content) return resolve(this._messages.notext);
-        return this.modules.openai.chat.completions.create({
-          model: opts.model || this.vars.chat.model,
-          n: this.vars.chat.n,
-          messages,
-        }).then(chat => {
+        this.state('get'); // set get state
+        this.modules.openai.chat.completions.create(params).then(chat => {
+          this.context('chat_func_response');
+          this.state('data'); // set data state
           const data = {
             id: chat.id,
             model: chat.model,
@@ -88,23 +99,11 @@ const OPEN = new Deva({
             role: data.role,
             content: data.text,
           });
-          this.context('chat_func_response');
+          this.state('resolve');
           return resolve(data);
         }).catch(err => {
-          this.context('error');
-          if (err.response && err.response.status) {
-            switch (err.response.status) {
-              case 429:
-              case 500:
-                return resolve({error:err.response.data.error.message});
-                break;
-              default:
-                return reject(err);
-            }
-          }
-          else {
-            return reject(err);
-          }
+          this.state('reject');
+          return reject(err);
         });
       });
     },
@@ -135,16 +134,15 @@ const OPEN = new Deva({
     async fileGet(file) {
       this.context('fileGet');
       const data = await this.modules.openai.files.retrieve(file);
-
       const text = [
-        `### Get File`,
+        `::begin:file:${data.id}`,
+        `### File Details`,
         `id: ${data.id}`,
         `file: ${data.filename}`,
         `status: ${data.status}`,
-        `details: ${data.status_details}`,
         `created: ${this.formatDate(data.created_at, 'long', true)}`,
+        `::end:file`
       ].join('\n');
-
       return {
         text,
         data,
@@ -153,32 +151,22 @@ const OPEN = new Deva({
 
     async fileUpload(file) {
       this.context('fileUpload');
-      console.log('UPLOADING FILE', file);
       const data = await this.modules.openai.files.create({
         file: this.fs.createReadStream(file),
         purpose: this.vars.file.purpose
       });
-      console.log('DATA', data);
       const text = [
+        `::begin:file:${data.id}`,
         `### File Upload`,
         `id: ${data.id}`,
         `file: ${data.filename}`,
         `purpose: ${data.purpose}`,
         `status: ${data.status}`,
         `created: ${this.formatDate(data.created_at, 'long', true)}`,
+        `::end:file`
       ].join('\n');
       return {
         text,
-        data,
-      };
-    },
-
-    async fileDelete(file) {
-      this.context('fileDelete');
-      const data = await this.modules.openai.files.del(file);
-
-      return {
-        text: `Delete: ${data.id}`,
         data,
       };
     },
@@ -189,7 +177,7 @@ const OPEN = new Deva({
 
       const text = files.data.map(file => {
         return [
-          '::begin:file',
+          `::begin:file:${file.id}`,
           `#### ${file.id}`,
           `id: ${file.id}`,
           `status: ${file.status}`,
@@ -213,7 +201,6 @@ const OPEN = new Deva({
         model: this.vars.job.model,
       });
 
-      console.log('tune create', data);
       const text = [
         `id: ${data.id}`,
         `model: ${data.model}`,
@@ -253,20 +240,27 @@ const OPEN = new Deva({
 
     async tuneGet(job) {
       const data = await this.modules.openai.fineTuning.jobs.retrieve(job);
-
-      console.log('tune get', data);
-
+      const text = [
+        `::begin:job:${data.id}`,
+        '### Fine Tune Job',
+        `id: ${data.id}`,
+        `status: ${data.status}`,
+        `file: ${data.training_file}`,
+        `base: ${data.model}`,
+        `model: ${data.fine_tuned_model}`,
+        `tokens: ${data.trained_tokens}`,
+        `created: ${this.formatDate(data.created_at, 'long', true)}`,
+        `finished: ${this.formatDate(data.finished_at, 'long', true)}`,
+        `::end:job`,
+      ].join('\n');
       return {
-        text: data.id,
+        text,
         data,
       }
     },
 
     async tuneCancel(job) {
       const data = await this.modules.openai.fineTuning.jobs.cancel(job);
-
-      console.log('tune cancel', data);
-
       return {
         text: data.id,
         data,
@@ -275,8 +269,6 @@ const OPEN = new Deva({
 
     async modelList() {
       const models = await this.modules.openai.models.list();
-
-      console.log('MODELS', models.data);
       const text = models.data.map(item => {
         return [
           `::begin:model`,
@@ -288,7 +280,7 @@ const OPEN = new Deva({
       });
       text.unshift('## Models');
       return {
-        text,
+        text: text.join('\n'),
         data: models.data,
       };
     },
@@ -296,21 +288,17 @@ const OPEN = new Deva({
     async modelGet(model) {
       const data = await this.modules.openai.models.retrieve(model);
 
-      console.log('MODEL GET', data);
-
+      const text = [
+        `::begin:model:${data.id}`,
+        '### Model Details',
+        `id: ${data.id}`,
+        `parent: ${data.parent}`,
+        `root: ${data.root}`,
+        `created: ${this.formatDate(data.created, 'long', true)}`,
+        '::end:model',
+      ].join('\n');
       return {
-        text: data.id,
-        data,
-      }
-    },
-
-    async modelDelete(model) {
-      const data = await this.modules.openai.models.del(model);
-
-      console.log('model delete', data);
-
-      return {
-        text: data.id,
+        text,
         data,
       }
     },
@@ -330,7 +318,7 @@ const OPEN = new Deva({
             data,
           })
         }).catch(err => {
-          return this.error(packet, err, reject);
+          return this.error(err, packet, reject);
         });
       });
     }
@@ -348,11 +336,7 @@ const OPEN = new Deva({
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
         const role = packet.q.meta.params[1] || this.vars.chat.role;
-        const model = packet.q.data.model || false;
-        const profile = packet.q.data.profile || false;
-        const corpus = packet.q.data.corpus || false;
-        const history = packet.q.data.history || false;
-        this.func.chat(packet.q.text, {model,profile,corpus,history}).then(chat => {
+        this.func.chat(packet.q.text, packet.q.data).then(chat => {
           data.chat = chat;
           const response = [
             `::begin:${chat.role}:${packet.id}`,
@@ -360,7 +344,7 @@ const OPEN = new Deva({
             `::end:${chat.role}:${this.hash(chat.text)}`,
             `date: ${this.formatDate(Date.now(), 'long', true)}`,
           ].join('\n');
-          this.context('chat_feecting');
+          this.context('feecting');
           return this.question(`${this.askChr}feecting parse ${response}`);
         }).then(feecting => {
           data.feecting = feecting.a.data;
@@ -371,7 +355,7 @@ const OPEN = new Deva({
             data,
           });
         }).catch(err => {
-          this.context('error');
+          this.context('error', this.vars.messages.error_chat);
           return this.error(err, packet, reject);
         })
       });
@@ -386,12 +370,9 @@ const OPEN = new Deva({
       this.context('relay');
       const agent = this.agent();
       const role = packet.q.meta.params[1] || false;
-      const profile = packet.q.data.profile || false;
-      const corpus = packet.q.data.corpus || false;
-      const history = packet.q.data.history || false;
       return new Promise((resolve, reject) => {
         if (!packet) return (this._messages.nopacket);
-        this.func.chat(packet.q.text, {profile,history,corpus}).then(chat => {
+        this.func.chat(packet.q.text, packet.q.data).then(chat => {
           this.context('relay_done');
           return resolve({
             text: chat.text,
@@ -466,7 +447,7 @@ const OPEN = new Deva({
     return this.start(data);
   },
   onError(err) {
-    console.log('OPEN ERROR', err);
+    console.log('ERROR', err);
   }
 });
 module.exports = OPEN

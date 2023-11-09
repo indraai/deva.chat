@@ -10,22 +10,27 @@ name: ::agent_name::
 emoji: ::agent_emoji::
 describe: ::agent_describe::
 
-## Features
-
-### security
-p: The local #security feature available to ::agent_name::.
-cmd:#::agent_key:: security
-
-### support
-p: The local #support feature available to ::agent_name::.
-cmd:#::agent_key:: support
-
-### services
-p: The local #services feature available to ::agent_name::.
-cmd:#::agent_key:: services
-
-
 ## Methods
+
+### chat
+p: The chat method enabled conversations with ChatGPT base AI. This method also provides a feecting formatted response.
+
+example: #open chat [message]
+
+### relay
+p: The relay method is the same as the chat method except it does NOT return a feecting formated response. The response from ChatGPT is relayed.  This method allows other agents to relay just the text provided by ChatGPT without system formatting.
+
+example: #open relay [message]
+
+### response
+
+### image
+
+### file
+
+### tune
+
+### model
 
 ### uid
 p:Generate a unique id from the ::agent_name::.
@@ -42,6 +47,20 @@ tty:#::agent_key:: issue [title of issue]
 ### help
 p:Get help using the ::agent_name::
 cmd:#::agent_key:: help
+
+## Features
+
+### security
+p: The local #security feature available to ::agent_name::.
+cmd:#::agent_key:: security
+
+### support
+p: The local #support feature available to ::agent_name::.
+cmd:#::agent_key:: support
+
+### services
+p: The local #services feature available to ::agent_name::.
+cmd:#::agent_key:: services
 
 ---
 
