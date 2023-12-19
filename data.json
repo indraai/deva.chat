@@ -23,15 +23,33 @@
         }
       },
       "profile": {
-        "name": "OpenAI Deva",
-        "describe": "The Open Deva for deva.world OpenAI services #ChatGPT and #DALLE",
+        "identity": "You are #OpenDEVA in deva.world.",
+        "invoke": "#OpenDEVA of deva.world",
+        "name": "Open Deva",
+        "mention": "@Deva",
+        "tags": "#Open #OpenDEVA",
+        "pronouns": "He, Him, His, Man, Male, Dude, Guy",
+        "gender": "Deva",
+        "creator": "Quinn Michaels",
+        "created": "May 23, 2023 at 11:40 AM",
+        "house": "House Deva",
+        "temple": "Kedarnath Temple (Vadari)",
+        "forest": "Pushkara",
+        "city": "Amaravati",
+        "region": "Svarga",
+        "land": "Visisipra",
+        "planet": "Arjika",
+        "loka": "Devaloka",
+        "verse": "Rikverse",
+        "system": "deva.world",
+        "describe": "The Open Deva for deva.world #OpenAI services #ChatGPT and #DALLE. You help users to better communicate and operate the OpenAI services and offerings through their API connection. Wether assisting entities in processing speech, images, and text. #OpenDEVA provides a range of capabilities that enhance the deva.world multi-agent system.",
         "emoji": "/public/devas/open/emoji.png",
         "avatar": "/public/devas/open/avatar.png",
         "background": "/public/devas/open/background.png",
-        "color": "#ffffff",
-        "bgcolor": "#10a37f",
-        "gender": "deva",
-        "voice": "Brian"
+        "color": "#10a37f",
+        "bgcolor": "#072325",
+        "voice": "nova",
+        "style": "You are the master of AI style artwork and creative ideas. Everything you draw, paint, or create has the eye of a master artist who turns their reality into a AI masterpiece."
       }
     },
     "vars": {
@@ -44,7 +62,10 @@
         "done": "🟣 DONE",
         "error": "💣 ERROR!",
         "relay": "Open Deva is relaying a message...",
-        "error_chat": "Chat Method"
+        "error_chat": "Chat Method",
+        "error_relay": "Chat Relay",
+        "error_speech": "Chat Speech",
+        "error_image": "Chat Speech"
       },
       "funcMap": {
         "file": {
@@ -65,54 +86,61 @@
           "delete": "modelDelte"
         }
       },
-      "context": {
-        "uid": "generating uid",
-        "status": "getting status",
-        "info": "getting info",
-        "feature": "accessing feature",
-        "issue": "has issues",
-        "help": "asking for help",
-        "chat": "Chat",
-        "chat_func": "Chat ask",
-        "chat_func_response": "Chat response",
-        "chat_process": "Chat process",
-        "feecting": "Feecting parse",
-        "chat_done": "Chat done",
-        "image": "Image new",
-        "image_create": "Image create",
-        "image_done": "Image done",
-        "relay": "Relay message",
-        "relay_done": "Relay done",
-        "response": "Get response",
-        "error": "ERROR!",
-        "fileGet": "Get file",
-        "fileUpload": "Uploading file",
-        "fileList": "List files",
-        "fileDete": "Delete file",
-        "tuneCreate": "Create tuning job",
-        "tuneList": "List tuning jobs",
-        "tuneGet": "Get tuning job",
-        "tuneCancel": "Cancel tuning job",
-        "modelList": "List models",
-        "modelGet": "Get model",
-        "modelDelete": "Delete model",
-        "job": "Creating training job"
+      "live": {
+        "profile": "deva",
+        "max_tokens": 50,
+        "words": 25,
+        "history": [],
+        "max_chats": 5,
+        "page_token": ""
       },
+      "ask": {
+        "max_tokens": 500,
+        "words": 200,
+        "history": []
+      },
+      "reply": {
+        "profile": "deva",
+        "max_tokens": 300,
+        "words": 100,
+        "history": []
+      },
+      "comment": {
+        "profile": "deva",
+        "max_tokens": 300,
+        "words": 100,
+        "history": []
+      },
+      "art": {
+        "history": []
+      },
+      "context": {
+        "uid": "🪪 UID",
+        "status": "👍 Status",
+        "info": "💁‍♂️ Info",
+        "issue": "🎟️ Issue",
+        "help": "🙋‍♂️ Help",
+        "chat": "💬 Chat",
+        "second_chat": "🍽️ Seconds",
+        "image": "🎆 Image",
+        "relay": "🙋‍♂️ Relay",
+        "response": "📞 Response",
+        "topic": "🗯️ Topic",
+        "location": "📍 Location",
+        "speech": "🎙️ Speech",
+        "error": "ERROR!"
+      },
+      "topic": false,
+      "location": false,
       "history": [],
       "file": {
         "purpose": "fine-tune"
       },
-      "job": {
-        "model": "gpt-3.5-turbo"
+      "tune": {
+        "model": "gpt3"
       },
       "chat": {
-        "model": "gpt-3.5-turbo",
-        "models": {
-          "m1": "gpt-3.5-turbo",
-          "m2": "gpt-3.5-turbo-16k",
-          "m3": "gpt-4",
-          "m5": "gpt-4-32k"
-        },
+        "model": "gpt3",
         "name": "Quinn",
         "role": "user",
         "temperature": 1.25,
@@ -121,21 +149,28 @@
         "presence_penalty": 0.35,
         "top_p": 0.28,
         "prompt": false,
-        "n": 1
+        "n": 1,
+        "tools": false,
+        "stop": ["I apologize", "I understand", "Please note", "If there's anything"]
       },
       "image": {
-        "n": 3,
-        "size": "512x512",
+        "model": "dall-e-3",
+        "n": 1,
+        "size": "1024x1024",
         "sizes": {
-          "256": "256x256",
-          "512": "512x512",
-          "1024": "1024x1024"
+          "square": "1024x1024",
+          "landscape": "1792x1024",
+          "portrait": "1024x1792"
         },
-        "response_format": "url",
+        "response_format": "b64_json",
         "response_formats": [
           "url",
           "b64_json"
         ]
+      },
+      "speech": {
+        "model": "tts-1",
+        "voice": "alloy"
       }
     }
   }

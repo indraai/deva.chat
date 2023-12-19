@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/indraai/OpenDeva#readme",
   "dependencies": {
-    "@indra.ai/deva": "^1.2.18",
+    "@indra.ai/deva": "^1.2.22",
     "openai": "^4.16.2"
   }
 }

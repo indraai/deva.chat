@@ -1,71 +1,35 @@
-image: ::agent_avatar::
+::begin:center
+image: /public/devas/::agent_key::/main.png
+::end:center
 
 # ::agent_name::
 
-p:This is the main help file for ::agent_name::.
+::profile::
 
-id: ::agent_id::
-key: ::agent_key::
-name: ::agent_name::
-emoji: ::agent_emoji::
-describe: ::agent_describe::
+::begin:deva-methods
+## ::agent_name:: Methods
+p: These methods here are built into every Deva to provide various features like generating a uid, getting the current status, and viewing the help files.
 
-## Methods
-
-### chat
+### Chat
 p: The chat method enabled conversations with ChatGPT base AI. This method also provides a feecting formatted response.
+example: #open chat [prompt]
 
-example: #open chat [message]
+### Image
+p: To create an image use the following command.
+example: #open image [prompt]
+::end:deva-methods
 
-### relay
-p: The relay method is the same as the chat method except it does NOT return a feecting formated response. The response from ChatGPT is relayed.  This method allows other agents to relay just the text provided by ChatGPT without system formatting.
-
-example: #open relay [message]
-
-### response
-
-### image
-
-### file
-
-### tune
-
-### model
-
-### uid
-p:Generate a unique id from the ::agent_name::.
-cmd:#::agent_key:: uid
-
-### status
-p:Return the status for the ::agent_name::.
-cmd:#::agent_key:: status
-
-### issue
-p: Create an issue associated with ::agent_name:: source code repository.
-tty:#::agent_key:: issue [title of issue]
-
-### help
-p:Get help using the ::agent_name::
-cmd:#::agent_key:: help
-
-## Features
-
-### security
-p: The local #security feature available to ::agent_name::.
-cmd:#::agent_key:: security
-
-### support
-p: The local #support feature available to ::agent_name::.
-cmd:#::agent_key:: support
-
-### services
-p: The local #services feature available to ::agent_name::.
-cmd:#::agent_key:: services
 
 ---
 
+talk:#docs view devas/main:security
+
+---
+
+copyright: (c)2023 Quinn Michaels
+
+::begin:hidden
 #color = ::agent_color::
 #bgcolor = ::agent_bgcolor::
 #bg = ::agent_background::
-
-copyright: (c)2023 Quinn Michaels
+::end:hidden
