@@ -22,11 +22,13 @@ example: #open image [prompt]
 
 ---
 
+::begin:Security
 talk:#docs view devas/main:security
+::end:Security
 
 ---
 
-copyright: (c)2023 Quinn Michaels
+copyright: (c)2024 Quinn Michaels
 
 ::begin:hidden
 #color = ::agent_color::

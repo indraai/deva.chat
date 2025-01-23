@@ -77,30 +77,6 @@ const OPEN = new Deva({
 
       const messages = opts.history || this.vars.history.slice(-10);
 
-      if (this.vars.topic) {
-        this.state('set', 'topic');
-        const topic = [
-          `#topic = ${this.vars.topic}`,
-          `set: Your current topic to #topic value.`
-        ].join('\n');
-        messages.unshift({
-          role: 'system',
-          content: topic,
-        })
-      }
-
-      if (this.vars.location) {
-        this.state('set', 'location');
-        const location = [
-          `#location = ${this.vars.location}`,
-          `set: Your current location to #location value.`
-        ].join('\n');
-        messages.unshift({
-          role: 'system',
-          content: location,
-        })
-      }
-
       if (opts.corpus) {
         this.state('set', 'corpus');
         messages.unshift({role: 'system', content: opts.corpus,});
@@ -109,6 +85,11 @@ const OPEN = new Deva({
       if (opts.profile) {
         this.state('set', 'profile');
         messages.unshift({role: 'system', content: opts.profile,});
+      }
+
+      if (opts.user) {
+        this.state('set', 'user');
+        messages.unshift({role: 'system', content: opts.user,});
       }
 
       if (opts.header) {
@@ -129,12 +110,11 @@ const OPEN = new Deva({
         top_p: this.vars.chat.top_p,
         frequency_penalty: this.vars.chat.frequency_penalty,
         presence_penalty: this.vars.chat.presence_penalty,
-        stop: this.vars.chat.stop,
         tools: this.copy(this.vars.chat.tools),
       };
 
       if (opts.max_tokens) {
-        this.state('set', 'max tokens');
+        this.action('set', 'max tokens');
         params.max_tokens = opts.max_tokens;
       }
 
@@ -151,20 +131,25 @@ const OPEN = new Deva({
       //   const askitem = params.tools.shift();
       // }
 
-      async function ask_entity(args) {
-        const theAgent = await self.question(`${self.askChr}${args.agent} ask:agent ${args.text}`);
-        return [
-          `from: ${theAgent.a.agent.name}`,
-          `message: ${theAgent.a.data.chat.text}`,
-          `date: ${self.formatDate(Date.now(), 'long', true)}`,
-        ].join('\n');
-      }
+      // async function ask_entity(args) {
+      //   const theAgent = await self.question(`${self.askChr}${args.agent} ask:agent ${args.text}`);
+      //   return [
+      //     `from: ${theAgent.a.agent.name}`,
+      //     `message: ${theAgent.a.data.chat.text}`,
+      //     `date: ${self.formatDate(Date.now(), 'long', true)}`,
+      //   ].join('\n');
+      // }
 
       const memkey = opts.memory || this.agent().key;
 
-      async function get_memory(args) {
-        const theMem = await self.question(`${self.askChr}data memory:${memkey} ${args.text}`);
+      async function search_memory(args) {
+        const theMem = await self.question(`${self.askChr}data memory:${memkey}:3 ${args.text}`);
         return theMem.a.text;
+      }
+
+      async function search_knowledge(args) {
+        const theKnowledge = await self.question(`${self.askChr}data knowledge:3 ${args.text}`);
+        return theKnowledge.a.text;
       }
 
       async function get_hymn(args) {
@@ -172,31 +157,15 @@ const OPEN = new Deva({
         return theHymn.a.text;
       }
 
-      async function get_book(args) {
-        const theBook = await self.question(`${self.askChr}veda book ${args.book}`);
-        return theBook.a.text;
-      }
-
-      async function get_wiki(args) {
-        const theTopic = await self.question(`${self.askChr}wiki ${args.type} ${args.topic}`);
-        console.log('THE TOPIC', theTopic.a.data);
-        if (theTopic.a.data.title === 'Not found.') return 'Use your imagination, and get creative.';
-        if (theTopic.a.data.wiki.type === 'disambiguation') return 'Use your imagination, and get creative.';
-        return theTopic.a.data.wiki.extract || theTopic.a.text;
-      }
-
       const funcs = {
-        // ask_entity,
-        // get_wiki,
-        get_memory,
-        get_book,
-        get_hymn,
+        search_knowledge,
+        search_memory,
+        // search_archive,
+        // get_hymn,
       }
 
       this.state('get', 'chat');
       const chat = await this.modules.openai.chat.completions.create(params)
-
-      this.state('set', 'tool calls'); // set data state
       const {tool_calls} = chat.choices[0].message;
 
       // this is where we want to trap the function.
@@ -212,7 +181,7 @@ const OPEN = new Deva({
             tool_call_id: tool.id,
             role: "tool",
             name: func,
-            content: funcResponse,
+            content: funcResponse || 'no-data',
           }); // extend conversation with function response
         }
 
@@ -225,7 +194,6 @@ const OPEN = new Deva({
           top_p: this.vars.chat.top_p,
           frequency_penalty: this.vars.chat.frequency_penalty,
           presence_penalty: this.vars.chat.presence_penalty,
-          stop: this.vars.chat.stop,
         };
 
         this.context('second_chat');
@@ -251,7 +219,7 @@ const OPEN = new Deva({
       }
 
       else {
-        this.state('set', 'first chat')
+        this.state('set', 'first chat');
         const data = {
           id: chat.id,
           model: chat.model,
@@ -406,7 +374,6 @@ const OPEN = new Deva({
         ].join('\n');
       });
       text.unshift('### Files');
-
       return {
         text: text.join('\n\n'),
         data: files.data,
@@ -424,7 +391,6 @@ const OPEN = new Deva({
         `id: ${data.id}`,
         `model: ${data.model}`,
         `created: ${this.formatDate(data.created_at * 1000, 'long', true)}`,
-        `organization: ${data.organization_id}`,
         `status: ${data.status}`,
         `file: ${data.file}`,
         `error: ${data.error}`,
@@ -556,6 +522,7 @@ const OPEN = new Deva({
         });
       });
     },
+
     /**************
     func: setModel
     params: model
@@ -567,6 +534,7 @@ const OPEN = new Deva({
       if (!models || !models[model]) return false;
       this.vars[type].model = model;
     },
+
     /**************
     func: getModel
     params: model
@@ -582,6 +550,7 @@ const OPEN = new Deva({
   },
 
   methods: {
+
     /**************
     method: chat
     params: packet
@@ -608,6 +577,7 @@ const OPEN = new Deva({
           ].join('\n');
           this.state('parse', 'chat');
           return this.question(`${this.askChr}feecting parse ${response}`);
+
         }).then(feecting => {
           data.feecting = feecting.a.data;
           this.action('resolve', 'chat');
@@ -616,6 +586,7 @@ const OPEN = new Deva({
             html: feecting.a.html,
             data,
           });
+
         }).catch(err => {
           this.state('reject', 'chat');
           return this.error(err, packet, reject);
@@ -650,6 +621,7 @@ const OPEN = new Deva({
           });
         }).catch(err => {
           this.state('reject', `relay:${packet.q.agent.profile.name}`);
+          console.log('PACKET DATA', packet.q.data);
           return this.error(err, packet, reject);
         })
       });
@@ -804,7 +776,6 @@ const OPEN = new Deva({
 
     // console.log('THIS VARS', this.vars.chat.role);
     this.modules.openai = new OpenAI({
-      organization: personal.org,
       apiKey: personal.key,
     });
     return this.start(data);

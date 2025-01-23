@@ -26,23 +26,14 @@
         "identity": "You are #OpenDEVA in deva.world.",
         "invoke": "#OpenDEVA of deva.world",
         "name": "Open Deva",
-        "mention": "@Deva",
+        "mention": "@Open",
         "tags": "#Open #OpenDEVA",
         "pronouns": "He, Him, His, Man, Male, Dude, Guy",
         "gender": "Deva",
         "creator": "Quinn Michaels",
         "created": "May 23, 2023 at 11:40 AM",
-        "house": "House Deva",
-        "temple": "Kedarnath Temple (Vadari)",
-        "forest": "Pushkara",
-        "city": "Amaravati",
-        "region": "Svarga",
-        "land": "Visisipra",
-        "planet": "Arjika",
-        "loka": "Devaloka",
-        "verse": "Rikverse",
         "system": "deva.world",
-        "describe": "The Open Deva for deva.world #OpenAI services #ChatGPT and #DALLE. You help users to better communicate and operate the OpenAI services and offerings through their API connection. Wether assisting entities in processing speech, images, and text. #OpenDEVA provides a range of capabilities that enhance the deva.world multi-agent system.",
+        "describe": "The Open Deva for deva.world provides #OpenAI #ChatGPT. Helping users to better communicate and operate the OpenAI services and offerings through the API connection. Processing speech, images, and text. #OpenDEVA provides a range of capabilities that enhance the deva.world multi-agent system.",
         "emoji": "/public/devas/open/emoji.png",
         "avatar": "/public/devas/open/avatar.png",
         "background": "/public/devas/open/background.png",
@@ -83,7 +74,7 @@
         "model": {
           "list": "modelList",
           "get": "modelGet",
-          "delete": "modelDelte"
+          "delete": "modelDelete"
         }
       },
       "live": {
@@ -140,7 +131,7 @@
         "model": "gpt3"
       },
       "chat": {
-        "model": "gpt3",
+        "model": "gpt-mini",
         "name": "Quinn",
         "role": "user",
         "temperature": 1.25,
