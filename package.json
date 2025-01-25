@@ -1,18 +1,18 @@
 {
   "id": 6162515749966,
-  "name": "@indra.ai/opendeva",
-  "version": "0.0.49",
+  "name": "@indra.ai/deva.chat",
+  "version": "0.0.1",
   "author": "Quinn Michaels",
   "license": "MIT",
-  "copyright": "2023",
-  "description": "The Open Deva handles #ChatGPT and #DALLE in deva.world.",
+  "copyright": "2024",
+  "description": "The Chat Deva handles #ChatGPT and #DALLE in deva.world.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/indraai/OpenDeva.git"
+    "url": "git+https://github.com/indraai/deva.chat.git"
   },
   "keywords": [
     "Open",
@@ -20,9 +20,9 @@
     "deva.world"
   ],
   "bugs": {
-    "url": "https://github.com/indraai/OpenDeva/issues"
+    "url": "https://github.com/indraai/deva.chat/issues"
   },
-  "homepage": "https://github.com/indraai/OpenDeva#readme",
+  "homepage": "https://github.com/indraai/deva.chat#readme",
   "dependencies": {
     "@indra.ai/deva": "^1.2.22",
     "openai": "^4.16.2"
