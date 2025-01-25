@@ -1,10 +1,10 @@
 {
   "id": 6162515749966,
   "name": "@indra.ai/deva.chat",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "author": "Quinn Michaels",
   "license": "MIT",
-  "copyright": "2024",
+  "copyright": "2025",
   "description": "The Chat Deva handles #ChatGPT and #DALLE in deva.world.",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/indraai/deva.chat/issues"
   },
-  "homepage": "https://github.com/indraai/deva.chat#readme",
+  "homepage": "https://deva.world/chat",
   "dependencies": {
     "@indra.ai/deva": "^1.2.22",
     "openai": "^4.16.2"
