@@ -15,9 +15,9 @@
     "url": "git+https://github.com/indraai/deva.chat.git"
   },
   "keywords": [
-    "Open",
+    "Chat",
     "Deva",
-    "deva.world"
+    "Deva.world"
   ],
   "bugs": {
     "url": "https://github.com/indraai/deva.chat/issues"
@@ -26,5 +26,6 @@
   "dependencies": {
     "@indra.ai/deva": "^1.2.22",
     "openai": "^4.16.2"
-  }
+  },
+  "pack-destination": "./packs/"
 }
