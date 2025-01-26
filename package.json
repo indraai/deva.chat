@@ -17,15 +17,18 @@
   "keywords": [
     "Chat",
     "Deva",
+    "Indra.ai",
+    "Deva.space",
+    "Deva.cloud",
     "Deva.world"
   ],
   "bugs": {
     "url": "https://github.com/indraai/deva.chat/issues"
   },
-  "homepage": "https://deva.world/chat",
+  "homepage": "https://deva.space/devas/chat",
   "dependencies": {
     "@indra.ai/deva": "^1.2.22",
     "openai": "^4.16.2"
-  },
-  "pack-destination": "./packs/"
+  }
+  
 }
