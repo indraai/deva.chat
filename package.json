@@ -1,7 +1,7 @@
 {
   "id": 6162515749966,
   "name": "@indra.ai/deva.chat",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Quinn Michaels",
   "license": "MIT",
   "copyright": "2025",
@@ -30,5 +30,4 @@
     "@indra.ai/deva": "^1.2.22",
     "openai": "^4.16.2"
   }
-  
 }
