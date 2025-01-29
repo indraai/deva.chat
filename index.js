@@ -1,25 +1,31 @@
-// Copyright (c)2023 Quinn Michaels
-// OpenAI Deva
-// used for connecting into open ai services for cht and images.
+// Copyright (c)2025 Quinn Michaels
+// Chat Deva
+// Chat Deva connects to Open AI services for chat and images.
+import Deva from '@indra.ai/deva';
+import { OpenAI } from 'openai';
+import pkg from './package.json' with {type:'json'};
 
-const { OpenAI } = require("openai");
+import data from './data.json' with {type:'json'};
+const {agent,vars} = data.DATA;
 
-const package = require('./package.json');
+// set the __dirname
+import {dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';    
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const info = {
-  id: package.id,
-  name: package.name,
-  describe: package.description,
-  version: package.version,
-  url: package.homepage,
+  id: pkg.id,
+  name: pkg.name,
+  describe: pkg.description,
+  version: pkg.version,
+  url: pkg.homepage,
   dir: __dirname,
-  git: package.repository.url,
-  bugs: package.bugs.url,
-  author: package.author,
-  license: package.license,
-  copyright: package.copyright,
+  git: pkg.repository.url,
+  bugs: pkg.bugs.url,
+  author: pkg.author,
+  license: pkg.license,
+  copyright: pkg.copyright,
 };
-const {agent,vars} = require('./data.json').DATA;
-const Deva = require('@indra.ai/deva');
 const OPEN = new Deva({
   info,
   agent,
@@ -117,28 +123,6 @@ const OPEN = new Deva({
         this.action('set', 'max tokens');
         params.max_tokens = opts.max_tokens;
       }
-
-      // if (opts.askAgent) {
-      //   this.state('set', 'askAgent');
-      //   const newTools = this.copy(this.vars.chat.tools);
-      //   const toolkey = opts.memory || this.agent().key;
-      //   const agents = newTools[0].function.parameters.properties.agent.enum.filter(k => k !== toolkey);
-      //   newTools[0].function.parameters.properties.agent.enum = agents;
-      //   params.tools = newTools;
-      // }
-      // else {
-      //   // remove the first element from tools so agents can't call other agents.
-      //   const askitem = params.tools.shift();
-      // }
-
-      // async function ask_entity(args) {
-      //   const theAgent = await self.question(`${self.askChr}${args.agent} ask:agent ${args.text}`);
-      //   return [
-      //     `from: ${theAgent.a.agent.name}`,
-      //     `message: ${theAgent.a.data.chat.text}`,
-      //     `date: ${self.formatDate(Date.now(), 'long', true)}`,
-      //   ].join('\n');
-      // }
 
       const memkey = opts.memory || this.agent().key;
 
@@ -784,4 +768,4 @@ const OPEN = new Deva({
     console.log('open error', err);
   }
 });
-module.exports = OPEN
+export default OPEN
