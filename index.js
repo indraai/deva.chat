@@ -1,6 +1,6 @@
 // Copyright (c)2025 Quinn Michaels
 // Chat Deva
-// Chat Deva connects to Open AI services for chat and images.
+// Chat Deva connects to Open AI ChatGPT services for chat and images.
 import Deva from '@indra.ai/deva';
 import { OpenAI } from 'openai';
 import pkg from './package.json' with {type:'json'};
