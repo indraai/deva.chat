@@ -752,7 +752,7 @@ const OPEN = new Deva({
       });
     }
   },
-  async onInit(data) {
+  async onInit(data, resolve) {
     const {personal} = this.security();
 
     const {chat} = this.services().personal;
@@ -762,7 +762,11 @@ const OPEN = new Deva({
     this.modules.openai = new OpenAI({
       apiKey: personal.key,
     });
-    return this.start(data);
+    return this.start(data, resolve);
+  },
+  onReady(data, resolve) {
+    this.prompt('ready');
+    return resolve(data);
   },
   onError(err) {
     console.log('open error', err);
