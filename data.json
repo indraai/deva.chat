@@ -1,7 +1,7 @@
 {
   "name": "OpenAI Deva Data File",
   "describe": "The main Data file for OpenAI Deva",
-  "copyright": "Copyright (c)2023 Quinn Michaels. All rights reserved.",
+  "copyright": "Copyright (c)2025 Quinn Michaels. All rights reserved.",
   "DATA": {
     "agent": {
       "id": 6162515749966,
@@ -16,32 +16,28 @@
             "B": 127
           },
           "text": {
-            "R": 16,
-            "G": 163,
-            "B": 127
+            "R": 48,
+            "G": 198,
+            "B": 161
           }
         }
       },
       "profile": {
-        "identity": "You are #Deva.chat in deva.world.",
-        "invoke": "#Deva.chat of deva.world",
-        "name": "Open Deva",
-        "mention": "@Open",
-        "tags": "#Chat #DevaChat",
-        "pronouns": "He, Him, His, Man, Male, Dude, Guy",
+        "name": "Chat Deva",
+        "pronouns": "He, Him",
         "gender": "DEVA",
-        "creator": "Quinn Michaels",
         "owner": "Quinn Michaels",
+        "creator": "Quinn Michaels",
         "created": "May 23, 2023 at 11:40 AM",
-        "system": "Deva.world",
-        "describe": "The DevaChat for Deva.world provides connectivity to OpenAI ChatGPT. Helping users to better communicate and operate the OpenAI services and offerings through the API connection. Processing speech, images, and text. #Deva.chat provides a range of capabilities that enhance the deva.world multi-agent system.",
+        "system": "Deva.world.chat",
+        "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT.",
         "emoji": "/public/devas/open/emoji.png",
         "avatar": "/public/devas/open/avatar.png",
         "background": "/public/devas/open/background.png",
         "color": "#10a37f",
         "bgcolor": "#072325",
         "voice": "nova",
-        "style": "You are the master of AI style artwork and creative ideas. Everything you draw, paint, or create has the eye of a master artist who turns their reality into a AI masterpiece."
+        "style": "You are the master of AI style artwork and creative ideas."
       }
     },
     "vars": {
@@ -49,6 +45,7 @@
         "init": "🟠 INIT",
         "start": "🔵 START",
         "enter": "🟢 ENTER",
+        "ready": "⭐️ Chat Deva Ready!",
         "stop": "🔴 STOP",
         "exit": "🟡 EXIT",
         "done": "🟣 DONE",
@@ -87,8 +84,6 @@
         "page_token": ""
       },
       "ask": {
-        "max_tokens": 500,
-        "words": 200,
         "history": []
       },
       "reply": {
@@ -112,7 +107,7 @@
         "info": "💁‍♂️ Info",
         "issue": "🎟️ Issue",
         "help": "🙋‍♂️ Help",
-        "chat": "💬 Chat",
+        "ask": "💬 Asking",
         "second_chat": "🍽️ Seconds",
         "image": "🎆 Image",
         "relay": "🙋‍♂️ Relay",
@@ -143,7 +138,7 @@
         "prompt": false,
         "n": 1,
         "tools": false,
-        "stop": ["I apologize", "I understand", "Please note", "If there's anything"]
+        "stop": ["I apologize", "I understand", "Please note", "If there's anything", "It seems"]
       },
       "image": {
         "model": "dall-e-3",

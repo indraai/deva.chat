@@ -67,35 +67,39 @@ const OPEN = new Deva({
     /**************
     func: chat
     params: opts
+      - corpus: is the entity corpus.
+      - profile: entity profiles
+      - user: the user profile
+      - header: the header to use.
+      - model: the model to use
+      - memory: is the agent key for the memory lookup.
+      - max_tokens: the max tokens for the response.
     describe: Call the OpenAI API with the proper data and parameters.
     ***************/
     async chat(content, opts) {
-      this.action('func', 'chat');
-      this.state('set', 'history');
-      const self = this;
+      this.action('func', 'ask');
+
 
       const _hist = {
         role: this.vars.chat.role,
         content,
       };
-      if (opts.history) opts.history.push(_hist);
-      else this.vars.history.push(_hist);
-
-      const messages = opts.history || this.vars.history.slice(-10);
+      this.vars.history.push(_hist); // push history record into vars.
+      const messages = this.vars.history.slice(-10); // gather the 5 latest history items.
 
       if (opts.corpus) {
         this.state('set', 'corpus');
         messages.unshift({role: 'system', content: opts.corpus,});
       }
 
-      if (opts.profile) {
-        this.state('set', 'profile');
-        messages.unshift({role: 'system', content: opts.profile,});
+      if (opts.agent) {
+        this.state('set', 'agent');
+        messages.unshift({role: 'system', content: opts.agent,});
       }
 
-      if (opts.user) {
-        this.state('set', 'user');
-        messages.unshift({role: 'system', content: opts.user,});
+      if (opts.client) {
+        this.state('set', 'client');
+        messages.unshift({role: 'system', content: opts.client,});
       }
 
       if (opts.header) {
@@ -116,7 +120,7 @@ const OPEN = new Deva({
         top_p: this.vars.chat.top_p,
         frequency_penalty: this.vars.chat.frequency_penalty,
         presence_penalty: this.vars.chat.presence_penalty,
-        tools: this.copy(this.vars.chat.tools),
+        tools: this.lib.copy(this.vars.chat.tools),
       };
 
       if (opts.max_tokens) {
@@ -125,6 +129,7 @@ const OPEN = new Deva({
       }
 
       const memkey = opts.memory || this.agent().key;
+      const self = this;
 
       async function search_memory(args) {
         const theMem = await self.question(`${self.askChr}data memory:${memkey}:3 ${args.text}`);
@@ -192,7 +197,7 @@ const OPEN = new Deva({
         }
 
         this.state('set', 'response'); // set response state
-        this.vars.response = this.copy(second_data);
+        this.vars.response = this.lib.copy(second_data);
         if (!opts.history) this.vars.history.push({
           role: second_data.role,
           content: second_data.text,
@@ -214,7 +219,7 @@ const OPEN = new Deva({
         }
 
         this.state('set', 'response'); // set response state
-        this.vars.response = this.copy(data);
+        this.vars.response = this.lib.copy(data);
 
         // push local history of no history in options.
         if (!opts.history) this.vars.history.push({
@@ -550,14 +555,13 @@ const OPEN = new Deva({
         const data = {};
 
         if (packet.q.meta.params[1]) this.func.setModel(packet.q.meta.params[1]);
-
         this.func.chat(packet.q.text, packet.q.data).then(chat => {
           data.chat = chat;
           const response = [
             `::begin:${chat.role}:${packet.id}`,
             this.utils.parse(chat.text),
-            `::end:${chat.role}:${this.hash(chat.text)}`,
-            `date: ${this.formatDate(Date.now(), 'long', true)}`,
+            `::end:${chat.role}:${this.lib.hash(chat.text)}`,
+            `date: ${this.lib.formatDate(Date.now(), 'long', true)}`,
           ].join('\n');
           this.state('parse', 'chat');
           return this.question(`${this.askChr}feecting parse ${response}`);
@@ -765,11 +769,12 @@ const OPEN = new Deva({
     return this.start(data, resolve);
   },
   onReady(data, resolve) {
-    this.prompt('ready');
+    this.prompt(this.vars.messages.ready);
     return resolve(data);
   },
   onError(err) {
-    console.log('open error', err);
+    this.prompt(this.vars.messages.error);
+    console.log(err);
   }
 });
 export default OPEN
