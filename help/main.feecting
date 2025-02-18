@@ -7,28 +7,16 @@ image: /public/devas/::agent_key::/main.png
 ::profile::
 
 ::begin:deva-methods
-## ::agent_name:: Methods
-p: These methods here are built into every Deva to provide various features like generating a uid, getting the current status, and viewing the help files.
-
 ### Chat
 p: The chat method enabled conversations with ChatGPT base AI. This method also provides a feecting formatted response.
-example: #open chat [prompt]
+example: #chat chat [prompt]
 
 ### Image
 p: To create an image use the following command.
-example: #open image [prompt]
+example: #chat image [prompt]
 ::end:deva-methods
 
-
----
-
-::begin:Security
-talk:#docs view devas/main:security
-::end:Security
-
----
-
-copyright: (c)2024 Quinn Michaels
+copyright: (c)2025 Quinn Michaels
 
 ::begin:hidden
 #color = ::agent_color::

@@ -699,17 +699,6 @@ const OPEN = new Deva({
       });
     },
 
-    file(packet) {
-      const data = {};
-      return this.func.processor(packet, this.vars.funcMap.file);
-    },
-    tune(packet) {
-      return this.func.processor(packet, this.vars.funcMap.tune);
-    },
-    model(packet) {
-      return this.func.processor(packet, this.vars.funcMap.model);
-    },
-
     /**************
     method: topic
     params: packet
