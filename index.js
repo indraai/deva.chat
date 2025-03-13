@@ -4,9 +4,7 @@
 import Deva from '@indra.ai/deva';
 import { OpenAI } from 'openai';
 import pkg from './package.json' with {type:'json'};
-
-import data from './data.json' with {type:'json'};
-const {agent,vars} = data.DATA;
+const {agent,vars} = pkg.data;
 
 // set the __dirname
 import {dirname} from 'node:path';
@@ -76,85 +74,64 @@ const OPEN = new Deva({
       - max_tokens: the max tokens for the response.
     describe: Call the OpenAI API with the proper data and parameters.
     ***************/
-    async chat(content, opts) {
-      this.action('func', 'ask');
-
-
+    async chat(opts) {
+      this.action('func', 'chat');
+      
+      const {options,tools} = this.vars.chat;
+      const serv = this.modules[this.vars.provider];
+      
       const _hist = {
-        role: this.vars.chat.role,
-        content,
+        role: options.role,
+        content: opts.text,
       };
+
       this.vars.history.push(_hist); // push history record into vars.
       const messages = this.vars.history.slice(-10); // gather the 5 latest history items.
-
-      if (opts.corpus) {
+      
+      if (opts.data.corpus) {
         this.state('set', 'corpus');
-        messages.unshift({role: 'system', content: opts.corpus,});
+        messages.unshift({role: 'system', content: opts.data.corpus,});
       }
 
-      if (opts.agent) {
+      if (opts.data.agent) {
         this.state('set', 'agent');
-        messages.unshift({role: 'system', content: opts.agent,});
+        messages.unshift({role: 'system', content: opts.data.agent,});
       }
 
-      if (opts.client) {
+      if (opts.data.client) {
         this.state('set', 'client');
-        messages.unshift({role: 'system', content: opts.client,});
+        messages.unshift({role: 'system', content: opts.data.client,});
       }
 
-      if (opts.header) {
+      if (opts.data.header) {
         this.state('set', 'header');
-        messages.unshift({role: 'system', content: opts.header,});
+        messages.unshift({role: 'system', content: opts.data.header,});
       }
 
       this.state('set', 'model');
-      const _model = opts.model || this.vars.chat.model;
-      const model = this.func.getModel(_model);
+      const model = this.vars.chat.models[this.vars.provider];
 
       this.state('set', 'params');
       const params = {
         model,
-        n: this.vars.chat.n,
+        n: options.n,
         messages,
-        temperature: this.vars.chat.temperature,
-        top_p: this.vars.chat.top_p,
-        frequency_penalty: this.vars.chat.frequency_penalty,
-        presence_penalty: this.vars.chat.presence_penalty,
-        tools: this.lib.copy(this.vars.chat.tools),
+        temperature: options.temperature,
+        top_p: options.top_p,
+        frequency_penalty: options.frequency_penalty,
+        presence_penalty: options.presence_penalty,
+        tools: this.lib.copy(tools),
       };
 
-      if (opts.max_tokens) {
+      if (opts.data.max_tokens) {
         this.action('set', 'max tokens');
         params.max_tokens = opts.max_tokens;
       }
 
-      const memkey = opts.memory || this.agent().key;
-      const self = this;
-
-      async function search_memory(args) {
-        const theMem = await self.question(`${self.askChr}data memory:${memkey}:3 ${args.text}`);
-        return theMem.a.text;
-      }
-
-      async function search_knowledge(args) {
-        const theKnowledge = await self.question(`${self.askChr}data knowledge:3 ${args.text}`);
-        return theKnowledge.a.text;
-      }
-
-      async function get_hymn(args) {
-        const theHymn = await self.question(`${self.askChr}veda hymn ${args.hymn}`);
-        return theHymn.a.text;
-      }
-
-      const funcs = {
-        search_knowledge,
-        search_memory,
-        // search_archive,
-        // get_hymn,
-      }
+      const memkey = opts.data.memory || this.agent().key; // set memkey for agent memory lookup
 
       this.state('get', 'chat');
-      const chat = await this.modules.openai.chat.completions.create(params)
+      const chat = await serv.chat.completions.create(params)
       const {tool_calls} = chat.choices[0].message;
 
       // this is where we want to trap the function.
@@ -165,7 +142,8 @@ const OPEN = new Deva({
         for (const tool of tool_calls) {
           const func = tool.function.name;
           const funcArgs = JSON.parse(tool.function.arguments);
-          const funcResponse = await funcs[func](funcArgs);
+          const funcResponse = await this.func[func](funcArgs);
+
           messages.push({
             tool_call_id: tool.id,
             role: "tool",
@@ -177,16 +155,16 @@ const OPEN = new Deva({
         this.state('set', 'second params');
         const second_params = {
           model,
-          n: this.vars.chat.n,
+          n: options.n,
           messages,
-          temperature: this.vars.chat.temperature,
-          top_p: this.vars.chat.top_p,
-          frequency_penalty: this.vars.chat.frequency_penalty,
-          presence_penalty: this.vars.chat.presence_penalty,
+          temperature: options.temperature,
+          top_p: options.top_p,
+          frequency_penalty: options.frequency_penalty,
+          presence_penalty: options.presence_penalty,
         };
 
         this.context('second_chat');
-        const second_chat = await this.modules.openai.chat.completions.create(second_params);
+        const second_chat = await serv.chat.completions.create(second_params);
         const second_data = {
           id: second_chat.id,
           model: second_chat.model,
@@ -230,7 +208,16 @@ const OPEN = new Deva({
         return data;
       }
     },
-
+    
+    // utility functions for chat feature
+    async search_memory(args) {
+      const theMem = await this.question(`${this.askChr}data memory:${memkey}:3 ${args.text}`);
+      return theMem.a.text;          
+    },
+    async search_laws(args) {
+      const theLaws = await this.question(`${this.askChr}legal search ${args.text}`);
+      return theLaws.a.text;          
+    },
 
     /**************
     func: speech
@@ -239,20 +226,27 @@ const OPEN = new Deva({
     ***************/
     async speech(opts) {
       this.action('func', 'speech');
+      
+      const agent = this.agent();
+      const {params} = opts.meta;
+      const agent_voice = params[1] || agent.profile.voice;
+      const agent_key = params[2] || agent.key;
+      
+      
       const file = `${Date.now()}.mp3`;
-      const speechFile = this.path.join(this.config.dir, 'public', 'devas', opts.agent.key, 'audio', file);
-      const speechUrl = `/public/devas/${opts.agent.key}/audio/${file}`;
+      const speechFile = this.lib.path.join(this.config.dir, 'public', 'assets', 'devas', agent_key, 'audio', file);
+      const speechUrl = `/public/devas/${agent_key}/audio/${file}`;
 
       this.state('create', 'speech');
       const mp3 = await this.modules.openai.audio.speech.create({
-        model: this.vars.speech.model,
-        voice: opts.meta.params[1] || this.vars.speech.voice,
+        model: 'tts-1',
+        voice: agent_voice,
         input: opts.text,
       });
 
       const buffer = Buffer.from(await mp3.arrayBuffer());
       this.state('write', 'speech file');
-      await this.fs.promises.writeFile(speechFile, buffer);
+      await this.lib.fs.promises.writeFile(speechFile, buffer);
 
       this.state('return', 'speech');
       return {
@@ -306,143 +300,6 @@ const OPEN = new Deva({
       });
     },
 
-    async fileGet(file) {
-      this.action('func', 'fileGet');
-      const data = await this.modules.openai.files.retrieve(file);
-      const text = [
-        `::begin:file:${data.id}`,
-        `### File Details`,
-        `id: ${data.id}`,
-        `file: ${data.filename}`,
-        `status: ${data.status}`,
-        `created: ${this.formatDate(data.created_at * 1000, 'long', true)}`,
-        `::end:file`
-      ].join('\n');
-      return {
-        text,
-        data,
-      };
-    },
-
-    async fileUpload(file) {
-      this.action('func', 'fileUpload');
-      const data = await this.modules.openai.files.create({
-        file: this.fs.createReadStream(file),
-        purpose: this.vars.file.purpose
-      });
-      const text = [
-        `::begin:file:${data.id}`,
-        `### File Upload`,
-        `id: ${data.id}`,
-        `file: ${data.filename}`,
-        `purpose: ${data.purpose}`,
-        `status: ${data.status}`,
-        `created: ${this.formatDate(data.created_at * 1000, 'long', true)}`,
-        `::end:file`
-      ].join('\n');
-      return {
-        text,
-        data,
-      };
-    },
-
-    async fileList(file) {
-      this.context('func', 'fileList');
-      const files = await this.modules.openai.files.list();
-
-      const text = files.data.map(file => {
-        return [
-          `::begin:file:${file.id}`,
-          `#### ${file.id}`,
-          `id: ${file.id}`,
-          `status: ${file.status}`,
-          `purpose: ${file.purpose}`,
-          `filename: ${file.filename}`,
-          `created: ${this.formatDate(file.created_at * 1000, 'long', true)}`,
-          '::end:file',
-        ].join('\n');
-      });
-      text.unshift('### Files');
-      return {
-        text: text.join('\n\n'),
-        data: files.data,
-      };
-    },
-
-    async tuneCreate(file) {
-      this.action('func', 'tuneCreate');
-      const data = await this.modules.openai.fineTuning.jobs.create({
-        training_file: file,
-        model: this.func.getModel(this.vars.tune.model, 'tune'),
-      });
-
-      const text = [
-        `id: ${data.id}`,
-        `model: ${data.model}`,
-        `created: ${this.formatDate(data.created_at * 1000, 'long', true)}`,
-        `status: ${data.status}`,
-        `file: ${data.file}`,
-        `error: ${data.error}`,
-      ].join('\n');
-
-      return {
-        text,
-        data,
-      }
-    },
-
-    async tuneList() {
-      this.action('func', 'tuneList');
-      const jobs = await this.modules.openai.fineTuning.jobs.list();
-      const text = jobs.data.map(job => {
-        return [
-          `::begin:job`,
-          `#### ${job.id}`,
-          `id: ${job.id}`,
-          `status: ${job.status}`,
-          `model: ${job.model}`,
-          `created: ${this.formatDate(job.created * 1000, 'long', true)}`,
-          `file: ${job.training_file}`,
-          job.error ? `${job.error.message}` : '',
-          `::end:job`,
-        ].join('\n');
-      }).join('\n\n');
-      return {
-        text,
-        data: jobs.data,
-      };
-    },
-
-    async tuneGet(job) {
-      this.action('func', 'tuneGet');
-      const data = await this.modules.openai.fineTuning.jobs.retrieve(job);
-      const text = [
-        `::begin:job:${data.id}`,
-        '### Fine Tune Job',
-        `id: ${data.id}`,
-        `status: ${data.status}`,
-        `file: ${data.training_file}`,
-        `base: ${data.model}`,
-        `model: ${data.fine_tuned_model}`,
-        `tokens: ${data.trained_tokens}`,
-        `created: ${this.formatDate(data.created_at * 1000, 'long', true)}`,
-        `finished: ${this.formatDate(data.finished_at * 1000, 'long', true)}`,
-        `::end:job`,
-      ].join('\n');
-      return {
-        text,
-        data,
-      }
-    },
-
-    async tuneCancel(job) {
-      this.action('func', 'tuneCancel');
-      const data = await this.modules.openai.fineTuning.jobs.cancel(job);
-      return {
-        text: data.id,
-        data,
-      }
-    },
 
     /**************
     func: modelList
@@ -473,9 +330,11 @@ const OPEN = new Deva({
     params: model
     describe: Get a specfic model details from the api.
     ***************/
-    async modelGet(model) {
+    async modelGet(model, provider) {
       this.action('func', 'modelGet');
-      const data = await this.modules.openai.models.retrieve(model);
+      const prov = this.modules[provider];
+      const data = await prov.models.retrieve(model);
+      console.log('models', data);
 
       const text = [
         `::begin:model:${data.id}`,
@@ -492,50 +351,6 @@ const OPEN = new Deva({
       }
     },
 
-    processor(packet, funcMap) {
-      const data = {};
-      const func = funcMap[packet.q.meta.params[1]];
-      return new Promise((resolve, reject) => {
-        this.func[func](packet.q.text).then(file => {
-          data.file = file.data;
-          return this.question(`${this.askChr}feecting parse ${file.text}`);
-        }).then(feecting => {
-          data.feecting = feecting.a.data;
-          return resolve({
-            text: feecting.a.text,
-            html: feecting.a.html,
-            data,
-          })
-        }).catch(err => {
-          return this.error(err, packet, reject);
-        });
-      });
-    },
-
-    /**************
-    func: setModel
-    params: model
-    describe: Set the current model that the AI is suppose to use.
-    ***************/
-    setModel(model=false, type='chat') {
-      if (!model) return model;
-      const models = this.services().personal[type].models;
-      if (!models || !models[model]) return false;
-      this.vars[type].model = model;
-    },
-
-    /**************
-    func: getModel
-    params: model
-    describe: Get a model value from services.
-    ***************/
-    getModel(model=false,type='chat') {
-      if (!model) return model;
-      const models = this.services().personal[type].models;
-      if (!models) return false;
-      if (!models[model]) return models[this.vars[type].model];
-      return models[model];
-    }
   },
 
   methods: {
@@ -554,14 +369,16 @@ const OPEN = new Deva({
         const agent = this.agent();
         const data = {};
 
-        if (packet.q.meta.params[1]) this.func.setModel(packet.q.meta.params[1]);
-        this.func.chat(packet.q.text, packet.q.data).then(chat => {
+        const {params} = packet.q.meta;
+        if (params[1]) this.vars.provider = params[1];
+
+        this.func.chat(packet.q).then(chat => {
           data.chat = chat;
           const response = [
-            `::begin:${chat.role}:${packet.id}`,
+            `::begin:${this.vars.provider}:${packet.id}`,
             this.utils.parse(chat.text),
-            `::end:${chat.role}:${this.lib.hash(chat.text)}`,
             `date: ${this.lib.formatDate(Date.now(), 'long', true)}`,
+            `::end:${this.vars.provider}:${this.lib.hash(chat.text)}`,
           ].join('\n');
           this.state('parse', 'chat');
           return this.question(`${this.askChr}feecting parse ${response}`);
@@ -598,18 +415,17 @@ const OPEN = new Deva({
         this.context('relay', packet.q.agent.profile.name);
         this.action('method', 'relay');
 
-        this.func.chat(text, packet.q.data).then(chat => {
+        this.func.chat(packet.q).then(chat => {
           data.parsed = this.utils.parse(chat.text);
           data.chat = chat;
           this.state('resolve', `relay:${packet.q.agent.profile.name}`);
           return resolve({
-            text: chat.text,
+            text: this.utils.parse(chat.text),
             html: false,
             data,
           });
         }).catch(err => {
           this.state('reject', `relay:${packet.q.agent.profile.name}`);
-          console.log('PACKET DATA', packet.q.data);
           return this.error(err, packet, reject);
         })
       });
@@ -646,7 +462,7 @@ const OPEN = new Deva({
             `::begin:audio:${packet.id}`,
             `audio[tts]:${speech.url}`,
             `url: ${speech.url}`,
-            `::end:audio:${this.hash(speech)}`
+            `::end:audio:${this.lib.hash(speech)}`
           ].join('\n');
           this.state('parse', 'speech');
           return this.question(`${this.askChr}feecting parse ${text}`);
@@ -745,19 +561,19 @@ const OPEN = new Deva({
       });
     }
   },
-  async onInit(data, resolve) {
+  async onReady(data, resolve) {
     const {personal} = this.security();
 
     const {chat} = this.services().personal;
+    this.vars.chat.options = chat.options;
     this.vars.chat.tools = chat.tools;
-
+    this.vars.chat.models = chat.models;
+    
     // console.log('THIS VARS', this.vars.chat.role);
-    this.modules.openai = new OpenAI({
-      apiKey: personal.key,
-    });
-    return this.start(data, resolve);
-  },
-  onReady(data, resolve) {
+    for (const x in personal) {
+      this.modules[x] = new OpenAI(personal[x]);
+      this.prompt(`provider: ${x}`);
+    }
     this.prompt(this.vars.messages.ready);
     return resolve(data);
   },
