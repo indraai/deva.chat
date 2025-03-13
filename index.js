@@ -127,6 +127,8 @@ const OPEN = new Deva({
         this.action('set', 'max tokens');
         params.max_tokens = opts.max_tokens;
       }
+      
+      this.prompt(`MEMORY ${opts.data.memory}`);
 
       const memkey = opts.data.memory || this.agent().key; // set memkey for agent memory lookup
 
@@ -211,7 +213,8 @@ const OPEN = new Deva({
     
     // utility functions for chat feature
     async search_memory(args) {
-      const theMem = await this.question(`${this.askChr}data memory:${memkey}:3 ${args.text}`);
+      const {key} = this.agent();
+      const theMem = await this.question(`${this.askChr}data memory:${key}:3 ${args.text}`);
       return theMem.a.text;          
     },
     async search_laws(args) {
