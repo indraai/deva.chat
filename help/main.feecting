@@ -1,10 +1,6 @@
-::begin:center
-image: /public/devas/::agent_key::/main.png
-::end:center
-
 # ::agent_name::
 
-::profile::
+::agent_profile::
 
 ::begin:deva-methods
 ### Chat
@@ -15,6 +11,11 @@ example: #chat chat [prompt]
 p: To create an image use the following command.
 example: #chat image [prompt]
 ::end:deva-methods
+
+---
+
+talk: #security file:public main:header
+talk: #algorithm file:public main:header
 
 copyright: (c)2025 Quinn Michaels
 

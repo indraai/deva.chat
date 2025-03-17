@@ -127,8 +127,6 @@ const OPEN = new Deva({
         this.action('set', 'max tokens');
         params.max_tokens = opts.max_tokens;
       }
-      
-      this.prompt(`MEMORY ${opts.data.memory}`);
 
       const memkey = opts.data.memory || this.agent().key; // set memkey for agent memory lookup
 
