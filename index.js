@@ -7,6 +7,7 @@ import pkg from './package.json' with {type:'json'};
 const {agent,vars} = pkg.data;
 
 // set the __dirname
+import querystring from 'node:querystring';
 import {dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';    
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -124,8 +125,8 @@ const OPEN = new Deva({
       };
 
       if (opts.data.max_tokens) {
-        this.action('set', 'max tokens');
-        params.max_tokens = opts.max_tokens;
+        this.state('set', `max tokens ${opts.data.max_tokens}`);
+        params.max_tokens = opts.data.max_tokens;
       }
 
       const memkey = opts.data.memory || this.agent().key; // set memkey for agent memory lookup
@@ -239,10 +240,10 @@ const OPEN = new Deva({
       const speechUrl = `/public/devas/${agent_key}/audio/${file}`;
 
       this.state('create', 'speech');
-      const mp3 = await this.modules.openai.audio.speech.create({
+      const mp3 = await this.modules.chatgpt.audio.speech.create({
         model: 'tts-1',
         voice: agent_voice,
-        input: opts.text,
+        input: decodeURIComponent(opts.text),
       });
 
       const buffer = Buffer.from(await mp3.arrayBuffer());
@@ -380,6 +381,7 @@ const OPEN = new Deva({
             this.utils.parse(chat.text),
             `date: ${this.lib.formatDate(Date.now(), 'long', true)}`,
             `::end:${this.vars.provider}:${this.lib.hash(chat.text)}`,
+            `button[💬 Speak]:${this.askChr}chat speech:${packet.q.agent.profile.voice} ${encodeURIComponent(chat.text)}`,
           ].join('\n');
           this.state('parse', 'chat');
           return this.question(`${this.askChr}feecting parse ${response}`);
