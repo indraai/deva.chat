@@ -91,22 +91,22 @@ const OPEN = new Deva({
       
       if (opts.data.corpus) {
         this.state('set', 'corpus');
-        messages.unshift({role: 'system', content: opts.data.corpus,});
+        messages.unshift({role: 'system', content: opts.data.corpus});
       }
 
       if (opts.data.agent) {
         this.state('set', 'agent');
-        messages.unshift({role: 'system', content: opts.data.agent,});
+        messages.unshift({role: 'system', content: opts.data.agent});
       }
 
       if (opts.data.client) {
         this.state('set', 'client');
-        messages.unshift({role: 'system', content: opts.data.client,});
+        messages.unshift({role: 'system', content: opts.data.client});
       }
 
       if (opts.data.header) {
         this.state('set', 'header');
-        messages.unshift({role: 'system', content: opts.data.header,});
+        messages.unshift({role: 'system', content: opts.data.header});
       }
 
       this.state('set', 'model');
@@ -129,12 +129,12 @@ const OPEN = new Deva({
         params.max_tokens = opts.data.max_tokens;
       }
 
-      const memkey = opts.data.memory || this.agent().key; // set memkey for agent memory lookup
+      const memkey = opts.data.memory || opts.agent.key; // set memkey for agent memory lookup
 
       this.state('get', 'chat');
       const chat = await serv.chat.completions.create(params)
       const {tool_calls} = chat.choices[0].message;
-
+      let data;
       // this is where we want to trap the function.
       if (tool_calls) {
         this.state('set', 'tool calls');
@@ -164,9 +164,9 @@ const OPEN = new Deva({
           presence_penalty: options.presence_penalty,
         };
 
-        this.context('second_chat');
+        this.state('set', 'second chat');
         const second_chat = await serv.chat.completions.create(second_params);
-        const second_data = {
+        data = {
           id: second_chat.id,
           model: second_chat.model,
           usage: second_chat.usage,
@@ -174,21 +174,18 @@ const OPEN = new Deva({
           text: second_chat.choices[0].message.content,
           created: second_chat.created,
         }
+        data.hash = this.lib.hash(data);
 
-        this.state('set', 'response'); // set response state
-        this.vars.response = this.lib.copy(second_data);
+        this.state('set', `response:${data.id}`); // set response state
+        this.vars.response = this.lib.copy(data);
         if (!opts.history) this.vars.history.push({
-          role: second_data.role,
-          content: second_data.text,
+          role: data.role,
+          content: data.text,
         });
-
-        this.state('return', 'second chat');
-        return second_data;
       }
-
       else {
-        this.state('set', 'first chat');
-        const data = {
+        this.state('set', 'data');
+        data = {
           id: chat.id,
           model: chat.model,
           usage: chat.usage,
@@ -196,8 +193,9 @@ const OPEN = new Deva({
           text: this.utils.process(chat.choices[0].message.content),
           created: chat.created,
         }
+        data.hash = this.lib.hash(data);
 
-        this.state('set', 'response'); // set response state
+        this.state('set', `response:${data.id}`); // set response state
         this.vars.response = this.lib.copy(data);
 
         // push local history of no history in options.
@@ -205,20 +203,45 @@ const OPEN = new Deva({
           role: data.role,
           content: data.text,
         });
-        this.state('return', 'first chat');
-        return data;
       }
+      // memory event
+      const memorydata = {
+        id: chat.id,
+        client: opts.client,
+        agent: opts.agent,
+        q: opts.text,
+        a: data.text,
+        created: Date.now(),
+      }
+      memorydata.hash = this.lib.hash(memorydata);
+      this.talk('data:memory', memorydata);
+      
+      this.state('return', 'data');
+      return data;
     },
     
     // utility functions for chat feature
     async search_memory(args) {
+      this.context('search_memory', args.text);
+      this.action('func', 'search_memory');
       const {key} = this.agent();
       const theMem = await this.question(`${this.askChr}data memory:${key}:3 ${args.text}`);
+      this.state('return', 'search_memory');
       return theMem.a.text;          
     },
     async search_laws(args) {
+      this.context('search_laws', args.text);
+      this.action('func', 'search_laws');
       const theLaws = await this.question(`${this.askChr}legal search ${args.text}`);
+      this.state('return', 'search_laws');
       return theLaws.a.text;          
+    },
+    async search_knowledge(args) {
+      this.context('search_knowledge', args.text);
+      this.action('func', 'search_knowledge');
+      const theKnowledge = await this.question(`${this.askChr}data knowledge ${args.text}`);
+      this.state('return', 'search_knowledge');
+      return theKnowledge.a.text;          
     },
 
     /**************
@@ -365,15 +388,14 @@ const OPEN = new Deva({
     chat(packet) {
       return new Promise((resolve, reject) => {
         if (!packet) return (`chat: ${this._messages.nopacket}`);
-
-        this.context('chat', packet.q.agent.profile.name);
-        this.action('method', 'chat');
-        const agent = this.agent();
-        const data = {};
-
         const {params} = packet.q.meta;
         if (params[1]) this.vars.provider = params[1];
 
+        this.context('chat', `${this.vars.provider}:${packet.q.agent.profile.name}`);
+        packet.q.agent = this.agent();
+        const data = {};
+
+        this.action('method', `chat:${this.vars.provider}`);
         this.func.chat(packet.q).then(chat => {
           data.chat = chat;
           const response = [
@@ -381,14 +403,12 @@ const OPEN = new Deva({
             this.utils.parse(chat.text),
             `date: ${this.lib.formatDate(Date.now(), 'long', true)}`,
             `::end:${this.vars.provider}:${this.lib.hash(chat.text)}`,
-            `button[💬 Speak]:${this.askChr}chat speech:${packet.q.agent.profile.voice} ${encodeURIComponent(chat.text)}`,
           ].join('\n');
-          this.state('parse', 'chat');
+          this.state('parse', `chat:${this.vars.provider}`);
           return this.question(`${this.askChr}feecting parse ${response}`);
-
         }).then(feecting => {
           data.feecting = feecting.a.data;
-          this.action('resolve', 'chat');
+          this.action('return', `chat:${this.vars.provider}`);
           return resolve({
             text:feecting.a.text,
             html: feecting.a.html,
@@ -396,7 +416,7 @@ const OPEN = new Deva({
           });
 
         }).catch(err => {
-          this.state('reject', 'chat');
+          this.state('reject', `chat:${this.vars.provider}`);
           return this.error(err, packet, reject);
         })
       });

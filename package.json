@@ -30,7 +30,7 @@
   },
   "homepage": "https://deva.space/devas/chat",
   "dependencies": {
-    "@indra.ai/deva": "^1.5.23",
+    "@indra.ai/deva": "^1.5.25",
     "openai": "^4.81.0"
   },
   "data": {
@@ -76,7 +76,7 @@
         "init": "🟠 INIT",
         "start": "🔵 START",
         "enter": "🟢 ENTER",
-        "ready": "⭐️ Chat Deva Ready!",
+        "ready": "⭐️ READY!",
         "stop": "🔴 STOP",
         "exit": "🟡 EXIT",
         "done": "🟣 DONE",
@@ -101,7 +101,10 @@
         "issue": "🎟️ Issue",
         "help": "🙋‍♂️ Help",
         "ask": "💬 Asking",
-        "second_chat": "🍽️ Seconds",
+        "second_chat": "🍽️ Second chat",
+        "search_memory": "🔎️ Search memory",
+        "search_laws": "🔎️ Search laws",
+        "search_knowledge": "🔎️ Search knowledge",
         "image": "🎆 Image",
         "relay": "🙋‍♂️ Relay",
         "response": "📞 Response",
