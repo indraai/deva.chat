@@ -1,6 +1,9 @@
-# ::agent_name::
+::BEGIN:MAIN
+# {{profile.name}}
 
-::agent_profile::
+{{profile}}
+
+---
 
 ::begin:deva-methods
 ### Chat
@@ -12,15 +15,10 @@ p: To create an image use the following command.
 example: #chat image [prompt]
 ::end:deva-methods
 
----
-
-talk: #security file:public main:header
-talk: #algorithm file:public main:header
-
-copyright: (c)2025 Quinn Michaels
-
 ::begin:hidden
-#color = ::agent_color::
-#bgcolor = ::agent_bgcolor::
-#bg = ::agent_background::
+#color = {{profile.color}}
+#bgcolor = {{profile.bgcolor}}
+#bg = {{profile.bg}}
 ::end:hidden
+copyright: (c)2025 Quinn Michaels
+::END:MAIN

@@ -54,21 +54,27 @@
         }
       },
       "profile": {
-        "name": "Chat Deva",
+        "name": "#ChatDeva",
+        "title": "Chat Deva",
+        "subtitle": "Managing the Deva.world chat interface.",
+        "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT.",
+        "tweet": "The Chat Deva provides connectivity to OpenAI ChatGPT.",
+        "hashtags": "QuinnMichaels,IndraAI,DevaWorld,ChatDeva",
         "pronouns": "He, Him",
         "gender": "DEVA",
+        "style": "You are the master of AI style artwork and creative ideas.",
+        "voice": "nova",
+        "system": "Deva.world.chat",
+        "layout": "default",
+        "color": "rgb(48,198,161)",
+        "bgcolor": "rgb(7,35,37)",
+        "emoji": "/assets/devas/chat/emoji.png",
+        "avatar": "/assets/devas/chat/avatar.png",
+        "image": "/assets/devas/chat/image.png",
+        "background": "/assets/devas/chat/background.png",
         "owner": "Quinn Michaels",
         "creator": "Quinn Michaels",
-        "created": "May 23, 2023 at 11:40 AM",
-        "system": "Deva.world.chat",
-        "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT.",
-        "emoji": "/public/devas/chat/emoji.png",
-        "avatar": "/public/devas/chat/avatar.png",
-        "background": "/public/devas/chat/background.png",
-        "color": "#10a37f",
-        "bgcolor": "#072325",
-        "voice": "nova",
-        "style": "You are the master of AI style artwork and creative ideas."
+        "created": "May 23, 2023 at 11:40 AM"
       }
     },
     "vars": {
