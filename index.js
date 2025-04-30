@@ -294,8 +294,8 @@ const OPEN = new Deva({
         if (opts.meta.params[1] && this.vars.image.sizes[opts.meta.params[1]]) {
           this.vars.image.size = this.vars.image.sizes[opts.meta.params[1]];
         }
-        this.state('create', 'image');
-        this.modules.openai.images.generate({
+        this.state('create', `image`);
+        this.modules.chatgpt.images.generate({
           model: this.vars.image.model,
           prompt: this.vars.image.prompt,
           n: this.vars.image.n,
@@ -304,20 +304,37 @@ const OPEN = new Deva({
         }).then(image => {
           // here we need to save the return data to a file
           const imageName = `${Date.now()}.png`;
-          const imagePath = this.path.join(this.config.dir, 'public', 'devas', opts.agent.key, 'gallery', imageName);
-          const imageUrl = `/public/devas/${opts.agent.key}/gallery/${imageName}`;
+          const imageDay = this.lib.getToday().toString();
+          const basePath = this.lib.path.join(this.config.dir, 'assets', 'devas', opts.agent.key, 'gallery');
+          const imagePath = this.lib.path.join(basePath, imageDay);
+          const imageFile = this.lib.path.join(imagePath, imageName);
 
-          this.state('write', 'image');
-          this.fs.writeFile(imagePath, Buffer.from(image.data[0].b64_json, 'base64'), 'base64', err => {
-            if (err) console.log('file write err', err);
-          });
+          if (!this.lib.fs.existsSync(imagePath)) this.lib.fs.mkdirSync(imagePath, { recursive: true });
+          
+          const imageUrl = `/assets/devas/${opts.agent.key}/gallery/${imageName}`;
+
+          this.state('write', `image:${imageName}`);
+          this.lib.fs.writeFileSync(imageFile, Buffer.from(image.data[0].b64_json, 'base64'), 'base64');
 
           const data = {
             name: imageName,
             path: imagePath,
             url: imageUrl,
             prompt: this.utils.parse(image.data[0].revised_prompt),
+            created: Date.now(),
           };
+          data.hash = this.lib.hash(data);
+
+          const jsonFile = this.lib.path.join(basePath, 'main.json')
+          // first we need to read the json file if there is one. 
+          if (!this.lib.fs.existsSync(jsonFile)) {
+            const json = {images:[]}
+            this.lib.fs.writeFileSync(jsonFile, JSON.stringify(json, null, 2), {encoding:'utf8'});
+          }
+          const jsonData = JSON.parse(this.lib.fs.readFileSync(jsonFile, 'utf8'));
+          jsonData.images.push(data);
+
+          this.lib.fs.writeFileSync(jsonFile, JSON.stringify(jsonData, null, 2), {encoding:'utf8',flag:'w'})
 
           this.state('resolve', 'image')
           return resolve(data);
@@ -521,7 +538,7 @@ const OPEN = new Deva({
             `url: ${image.url}`,
             ``,
             `${image.prompt}`,
-            `::end:image:${this.hash(image)}`,
+            `::end:image:${image.hash}`,
           ].join('\n');
           return this.question(`${this.askChr}feecting parse ${text}`);
         }).then(feecting => {

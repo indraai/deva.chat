@@ -30,7 +30,7 @@
   },
   "homepage": "https://deva.space/devas/chat",
   "dependencies": {
-    "@indra.ai/deva": "^1.5.35",
+    "@indra.ai/deva": "^1.5.36",
     "openai": "^4.81.0"
   },
   "data": {
@@ -54,11 +54,12 @@
         }
       },
       "profile": {
-        "name": "#ChatDeva",
+        "name": "Chat Deva",
+        "hashtag": "#ChatDeva",
         "title": "Chat Deva",
         "subtitle": "Managing the Deva.world chat interface.",
-        "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT.",
-        "tweet": "The Chat Deva provides connectivity to OpenAI ChatGPT.",
+        "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
+        "tweet": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
         "hashtags": "QuinnMichaels,IndraAI,DevaWorld,ChatDeva",
         "pronouns": "He, Him",
         "gender": "DEVA",
