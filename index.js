@@ -32,6 +32,7 @@ const OPEN = new Deva({
   utils: {
     translate(input) {return input.trim();},
     parse(input) {
+      return input;
       return input.split('\n\n').map(p => {
         const beginNum = /^\d/.test(p);
         const valid = p.length && p !== '\n' && !beginNum ? true : false;
