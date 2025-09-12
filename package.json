@@ -30,7 +30,7 @@
   },
   "homepage": "https://deva.space/devas/chat",
   "dependencies": {
-    "@indra.ai/deva": "^1.6.61",
+    "@indra.ai/deva": "^1.6.62",
     "openai": "^4.81.0"
   },
   "data": {
