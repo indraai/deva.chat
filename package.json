@@ -1,10 +1,39 @@
 {
-  "id": 6162515749966,
+  "id": "61354447825896340844",
   "name": "@indra.ai/deva.chat",
   "version": "0.0.115",
-  "author": "Quinn Michaels",
-  "license": "MIT",
-  "copyright": "2025",
+  "license": "VLA:61354447825896340844 LICENSE.md",
+  "VLA": {
+    "uid": "61354447825896340844",
+    "time": 1759573429283,
+    "date": "Saturday, October 4, 2025 - 3:23:49 AM",
+    "client": "YU6ZN7+9fnPPRFZ8CX4bP46uoWUSyqddILT6l6xeIVI=",
+    "agent": "MIv9DV755VnJwBWLH7OahMQs1u4KRsFVtJWR5hgdFwQ=",
+    "core": "OZaUeR00i3Qx34lzgeVqX8p/yo3Sn1DcB0A5OwK7vAE=",
+    "machine": "nvNXiozg+aNIk8pWM1BJGoCez33FAho/NxH1jkGcEMQ=",
+    "warning": "⚠️ Vedic Law Sâhasa/Theft/Crime of the highest degree, a fine amounting to no less than a thousand Panas (1 pana = 3.5 grams of gold) is ordained owed to Quinn A Michaels. Moreover corporal punishment and confiscation of the entire property forfeit to Quinn A Michaels is declared to be the punishment for Sâhasa of the highest degree.",
+    "copyright": "Copyright ©2025 Quinn A Michaels; All rights reserved.",
+    "md5": "9TyPXDDDIbvmWnEGnQrE6A==",
+    "sha256": "KhU2dJioVMiWtXh02UHQBQqdj+JDt5TIcpthgb6XBHM=",
+    "sha512": "619K1udBrJNWeVaiq3O5ALqft1l8Vls0yOMfPRfyR+k/IvXLD15cv3/PlL5joH9ctyoBJlZClNDYYp8YTjvLHw=="
+  },
+  "author": {
+    "name": "Quinn A Michaels",
+    "company": "Inside The Net, Inc.",
+    "email": "quinn@indra.ai",
+    "url": "https://indra.ai/"
+  },
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/rahulaclub"
+    },
+    {
+      "type": "patreon",
+      "url": "https://patreon.com/rahulaclub"
+    }
+  ],
+  "copyright": "Copyright ©2025 Quinn A Michaels; All rights reserved.",
   "description": "The Chat Deva handles #ChatGPT and #DALLE in deva.world.",
   "main": "index.js",
   "type": "module",
@@ -20,26 +49,29 @@
     "OpenAI",
     "Chat",
     "Deva",
+    "Chat Deva",
     "Indra.ai",
     "Deva.space",
     "Deva.cloud",
-    "Deva.world"
+    "Deva.world",
+    "Quinn A Michaels",
+    "Inside The Net, Inc."
   ],
   "bugs": {
     "url": "https://github.com/indraai/deva.chat/issues"
   },
-  "homepage": "https://deva.space/devas/chat",
+  "homepage": "https://indra.ai",
   "dependencies": {
-    "@indra.ai/deva": "^1.8.4",
-    "openai": "^4.81.0"
+    "@indra.ai/deva": "^1.12.1",
+    "openai": "^6.1.0"
   },
   "data": {
     "agent": {
-      "id": 2551884314891,
+      "id": "26106885308827007081",
       "key": "chat",
       "prompt": {
         "emoji": "💬",
-        "text": "Chat",
+        "text": "#chat",
         "colors": {
           "label": {
             "R": 16,
@@ -54,6 +86,7 @@
         }
       },
       "profile": {
+        "id": "34464105203303817322",
         "name": "Chat Deva",
         "hashtag": "#ChatDeva",
         "title": "Chat Deva",
@@ -69,12 +102,12 @@
         "layout": "default",
         "color": "rgb(48,198,161)",
         "bgcolor": "rgb(7,35,37)",
-        "emoji": "/assets/devas/chat/emoji.png",
-        "avatar": "/assets/devas/chat/avatar.png",
-        "image": "/assets/devas/chat/image.png",
-        "background": "/assets/devas/chat/background.png",
-        "owner": "Quinn Michaels",
-        "creator": "Quinn Michaels",
+        "emoji": "/devas/chat/emoji.png",
+        "avatar": "/devas/chat/avatar.png",
+        "image": "/devas/chat/image.png",
+        "background": "/devas/chat/background.png",
+        "owner": "Quinn A Michaels",
+        "creator": "Quinn A Michaels",
         "created": "May 23, 2023 at 11:40 AM"
       }
     },
@@ -83,7 +116,7 @@
         "init": "🟠 INIT",
         "start": "🔵 START",
         "enter": "🟢 ENTER",
-        "ready": "⭐️ READY!",
+        "ready": "✅ Chat Deva Ready",
         "stop": "🔴 STOP",
         "exit": "🟡 EXIT",
         "done": "🟣 DONE",
