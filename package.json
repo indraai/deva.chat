@@ -38,7 +38,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "latest": "npm i @indra.ai/deva@latest @indra.ai/deva.socket@latest @indra.ai/deva.chat@latest openai@latest --save"
+    "latest": "npm i @indra.ai/deva@latest @indra.ai/deva.socket@latest @indra.ai/deva.chat@latest openai@latest --save",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
