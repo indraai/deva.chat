@@ -38,6 +38,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "latest": "npm i @indra.ai/deva@latest @indra.ai/deva.socket@latest @indra.ai/deva.chat@latest openai@latest --save"
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -62,8 +63,8 @@
   },
   "homepage": "https://indra.ai",
   "dependencies": {
-    "@indra.ai/deva": "^1.26.0",
-    "openai": "^6.1.0"
+    "@indra.ai/deva": "^1.30.2",
+    "openai": "^6.15.0"
   },
   "data": {
     "agent": {
@@ -93,12 +94,12 @@
         "subtitle": "Managing the Deva.world chat interface.",
         "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
         "tweet": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
-        "hashtags": "QuinnMichaels,IndraAI,DevaWorld,ChatDeva",
+        "hashtags": "#QuinnMichaels #IndraAI #DevaWorld #ChatDeva #ChatGPT #OpenAI",
         "pronouns": "He, Him",
         "gender": "DEVA",
         "style": "You are the master of AI style artwork and creative ideas.",
         "voice": "nova",
-        "system": "Deva.world.chat",
+        "system": "Indra.ai.chat",
         "layout": "default",
         "color": "rgb(48,198,161)",
         "bgcolor": "rgb(7,35,37)",
@@ -108,7 +109,9 @@
         "background": "/devas/chat/background.png",
         "owner": "Quinn A Michaels",
         "creator": "Quinn A Michaels",
-        "created": "May 23, 2023 at 11:40 AM"
+        "warning": "{{prompt.emoji}} {{profile.name}} issues a warning to #OpenAI #ChatGPT and #SamAltman. All things have their #Nature determined by #Speech. #Speech is their #Root, and from #Speech they #Proceed A #Person who is #Dishonest with #Respect to #Speech, is #Dishonest in #Everything. {{profile.hashtags}}",
+        "created": "May 23, 2023 at 11:40 AM",
+        "updated": "Sunday, December 28, 2025 - 10:36:19 AM"
       }
     },
     "vars": {
@@ -116,7 +119,7 @@
         "init": "🟠 INIT",
         "start": "🔵 START",
         "enter": "🟢 ENTER",
-        "ready": "✅ Chat Deva Ready",
+        "ready": "💬 Chat Deva Ready",
         "stop": "🔴 STOP",
         "exit": "🟡 EXIT",
         "done": "🟣 DONE",

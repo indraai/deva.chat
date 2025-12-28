@@ -33,7 +33,7 @@ const info = {
   VLA: pkg.VLA,
   copyright: pkg.copyright,
 };
-const OPEN = new Deva({
+const ChatDeva = new Deva({
   info,
   agent,
   vars,
@@ -61,10 +61,10 @@ const OPEN = new Deva({
     },
   },
   listeners: {
-    'open:location'(packet) {
+    'chat:location'(packet) {
       this.vars.location = packet.data;
     },
-    'open:topic'(packet) {
+    'chat:topic'(packet) {
       this.vars.topic = packet.data;
     },
   },
@@ -110,4 +110,4 @@ const OPEN = new Deva({
     console.log(err);
   }
 });
-export default OPEN
+export default ChatDeva
