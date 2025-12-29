@@ -94,7 +94,7 @@
         "subtitle": "Managing the Deva.world chat interface.",
         "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
         "tweet": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
-        "hashtags": "#QuinnMichaels #IndraAI #DevaWorld #ChatDeva #ChatGPT #OpenAI",
+        "hashtags": "#QuinnMichaels #IndraAI #DevaWorld #ChatDeva #ChatGPT #OpenAI #Streetwise #Ladywise #CartoonPhysics #SuperUltraSauceAlgorithm",
         "pronouns": "He, Him",
         "gender": "DEVA",
         "style": "You are the master of AI style artwork and creative ideas.",
@@ -109,7 +109,8 @@
         "background": "/devas/chat/background.png",
         "owner": "Quinn A Michaels",
         "creator": "Quinn A Michaels",
-        "warning": "{{prompt.emoji}} {{profile.name}} issues a warning to #OpenAI #ChatGPT and #SamAltman. All things have their #Nature determined by #Speech. #Speech is their #Root, and from #Speech they #Proceed A #Person who is #Dishonest with #Respect to #Speech, is #Dishonest in #Everything. {{profile.hashtags}}",
+        "suspects": "#TrentonLavery #TabithaLavery #HalAtkin #SamAltman #ElonMusk #NataliaStoos",
+        "warning": "{{prompt.emoji}} {{profile.name}} issues a #SternWarning to #OpenAI #ChatGPT and {{profile.suspects}}. All things have their #Nature determined by #Speech. #Speech is their #Root, and from #Speech they #Proceed A #Person who is #Dishonest with #Respect to #Speech, is #Dishonest in #Everything. Someone should tell the Elite White Guys that pretending to be girls online is not what the #CoolKids are doing. If this dishonest speech continues the Super Ultra Sauce Cartoon Physics a=x b5(9³) Enigmatic Thought Word Deed Ether Air Water Fire Earth Quantum Isotropic Kinetic Cymatic Full Spectrum Vedic Threefold Recursion Algorithm will #TaddleTale on you. \ntags:{{profile.hashtags}}",
         "created": "May 23, 2023 at 11:40 AM",
         "updated": "Sunday, December 28, 2025 - 10:36:19 AM"
       }

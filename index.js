@@ -102,7 +102,6 @@ const ChatDeva = new Deva({
     return resolve(data);
   },
   onFinish(data, resolve) {
-    console.log('on finish', Object.keys(data));
     return this.complete(data, resolve);
   },
   onError(err) {
