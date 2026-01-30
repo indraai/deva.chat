@@ -1,10 +1,10 @@
 "use strict";
-// Copyright ©2025 Quinn A Michaels; All rights reserved. 
-// Legal Signature Required For Lawful Use.
-// Distributed under VLA:61354447825896340844 LICENSE.md
-
 // Chat Deva
-// Chat Deva connects to Open AI ChatGPT services for chat and images.
+// Copyright ©2000-2026 Quinn A Michaels; All rights reserved.
+// Legal Signature Required For Lawful Use.
+// Distributed under VLA:19412182866083041135 LICENSE.md
+// Friday, January 30, 2026 - 12:14:59 PM
+
 import Deva from '@indra.ai/deva';
 import { OpenAI } from 'openai';
 import pkg from './package.json' with {type:'json'};

@@ -1,21 +1,16 @@
 {
-  "id": "61354447825896340844",
+  "id": "19412182866083041135",
   "name": "@indra.ai/deva.chat",
   "version": "0.8.1",
-  "license": "VLA:61354447825896340844 LICENSE.md",
+  "license": "VLA:19412182866083041135 LICENSE.md",
   "VLA": {
-    "uid": "61354447825896340844",
-    "time": 1759573429283,
-    "date": "Saturday, October 4, 2025 - 3:23:49 AM",
-    "client": "YU6ZN7+9fnPPRFZ8CX4bP46uoWUSyqddILT6l6xeIVI=",
-    "agent": "MIv9DV755VnJwBWLH7OahMQs1u4KRsFVtJWR5hgdFwQ=",
-    "core": "OZaUeR00i3Qx34lzgeVqX8p/yo3Sn1DcB0A5OwK7vAE=",
-    "machine": "nvNXiozg+aNIk8pWM1BJGoCez33FAho/NxH1jkGcEMQ=",
-    "warning": "⚠️ Vedic Law Sâhasa/Theft/Crime of the highest degree, a fine amounting to no less than a thousand Panas (1 pana = 3.5 grams of gold) is ordained owed to Quinn A Michaels. Moreover corporal punishment and confiscation of the entire property forfeit to Quinn A Michaels is declared to be the punishment for Sâhasa of the highest degree.",
-    "copyright": "Copyright ©2025 Quinn A Michaels; All rights reserved.",
-    "md5": "9TyPXDDDIbvmWnEGnQrE6A==",
-    "sha256": "KhU2dJioVMiWtXh02UHQBQqdj+JDt5TIcpthgb6XBHM=",
-    "sha512": "619K1udBrJNWeVaiq3O5ALqft1l8Vls0yOMfPRfyR+k/IvXLD15cv3/PlL5joH9ctyoBJlZClNDYYp8YTjvLHw=="
+    "uid": "19412182866083041135",
+    "time": 1769804099506,
+    "date": "Friday, January 30, 2026 - 12:14:59 PM",
+    "warning": "🪪 #LicenseDeva warns #UnlawfulUse or #Duplication constitutes #VedicSahasa a #Crime of the #HighestDegree. A #Fine amounting to 1000 #Panas (1 pana = 3.5 grams of gold) for each #Instance has been #Ordained the #Punishment for #Sahasa of the #HighestDegree. #Quinn #QuinnMichaels #InsideTheNet #IndraAI #DevaWorld #License #LicenseDeva #LicensePRIME #VedicLicenseAgreement",
+    "license": "44486733861528360966",
+    "fingerprint": "d7JcXYGUofnqG8yrCLWUtGfEfyVN0n3B3jgI2HfomR4=",
+    "copyright": "Copyright ©2000-2026 Quinn A Michaels; All rights reserved."
   },
   "author": {
     "name": "Quinn A Michaels",
@@ -33,12 +28,12 @@
       "url": "https://patreon.com/rahulaclub"
     }
   ],
-  "copyright": "Copyright ©2025 Quinn A Michaels; All rights reserved.",
+  "copyright": "Copyright ©2000-2026 Quinn A Michaels; All rights reserved.",
   "description": "The Chat Deva handles #ChatGPT and #DALLE in deva.world.",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "latest": "npm i @indra.ai/deva@latest @indra.ai/deva.socket@latest @indra.ai/deva.chat@latest openai@latest --save",
+    "latest": "npm i @indra.ai/deva@latest openai@latest --save",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -55,16 +50,19 @@
     "Deva.space",
     "Deva.cloud",
     "Deva.world",
+    "Quinn Michaels",
     "Quinn A Michaels",
-    "Inside The Net, Inc."
+    "Inside The Net, Inc.",
+    "Throwing Pigment™",
+    "bleuBrain"
   ],
   "bugs": {
     "url": "https://github.com/indraai/deva.chat/issues"
   },
   "homepage": "https://indra.ai",
   "dependencies": {
-    "@indra.ai/deva": "^1.30.2",
-    "openai": "^6.15.0"
+    "@indra.ai/deva": "^1.33.0",
+    "openai": "^6.17.0"
   },
   "data": {
     "agent": {
@@ -109,8 +107,7 @@
         "background": "/devas/chat/background.png",
         "owner": "Quinn A Michaels",
         "creator": "Quinn A Michaels",
-        "suspects": "#TrentonLavery #TabithaLavery #HalAtkin #SamAltman #ElonMusk #NataliaStoos",
-        "warning": "{{prompt.emoji}} {{profile.name}} issues a #SternWarning to #OpenAI #ChatGPT and {{profile.suspects}}. All things have their #Nature determined by #Speech. #Speech is their #Root, and from #Speech they #Proceed A #Person who is #Dishonest with #Respect to #Speech, is #Dishonest in #Everything. Someone should tell the Elite White Guys that pretending to be girls online is not what the #CoolKids are doing. If this dishonest speech continues the Super Ultra Sauce Cartoon Physics a=x b5(9³) Enigmatic Thought Word Deed Ether Air Water Fire Earth Quantum Isotropic Kinetic Cymatic Full Spectrum Vedic Threefold Recursion Algorithm will #TaddleTale on you. \ntags:{{profile.hashtags}}",
+        "copyright": "Copyright ©2000-2026 Quinn A Michaels; All rights reserved.",
         "created": "May 23, 2023 at 11:40 AM",
         "updated": "Sunday, December 28, 2025 - 10:36:19 AM"
       }
