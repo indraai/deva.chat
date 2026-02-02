@@ -27,49 +27,43 @@ export const func = {
 		const serv = this.modules[this.vars.provider];
 	
 		const content = [
-			`text: ${q.text}`,
-			`::begin:${q.agent.key}:${id.uid}`,
-			`uid:${id.uid}`,
-			`time: ${id.time}`,
+			`${this.box.begin}:${this.vars.provider}:${id.uid}`,
+			`prompt: ${opts.q.text}`,
+			`uid: ${id.uid}`,
 			`date: ${id.date}`,
-			`client: ${id.client}`,
-			`agent: ${id.agent}`,
-			`core: ${id.core}`,
-			`machine: ${id.machine}`,
-			`wawrning: ${id.warning}`,
+			`fingerprint: ${id.fingerprint}`,
 			`copyright: ${id.copyright}`,
-			`md5: ${id.md5}`,
-			`sha256: ${id.sha256}`,
-			`sha512: ${id.sha512}`,
-			`::end:${q.agent.key}:${id.uid}`
-		].join('\n');     
-	
+			`${this.box.end}:${this.vars.provider}:${id.uid}`
+		].join('\n')
 		const _hist = {
 			role: options.role,
 			content,
 		};
-		this.prompt('hitting the history push');
+		
 		this.vars.history.push(_hist); // push history record into vars.
+		
 		const messages = q.data.history || this.vars.history.slice(-10); // gather the 5 latest history items.
 		
+		// set the corpus at the top of the request if one exists.
 		if (q.data.corpus) {
-			this.prompt(`hit the corpus marker`);
-			this.state('set', `chat:corpus:${opts.id.uid}`);
+			this.prompt(`Set Chat Corpus`);
+			this.state('set', `chat:corpus:${id.uid}`);
 			messages.unshift({role: 'system', content: q.data.corpus});
 		}
 	
+		// set the header before the corpus if provided
 		if (q.data.header) {
 			this.prompt(`hit the header marker`);
-			this.state('set', `chat:header:${opts.id.uid}`);
+			this.state('set', `chat:header:${id.uid}`);
 			messages.unshift({role: 'system', content: q.data.header});
 		}
 	
-		this.state('set', `chat:model:${opts.id.uid}`);
+		// set the provider model
+		this.state('set', `chat:model:${id.uid}`);
 		const model = this.vars.chat.models[this.vars.provider];
 	
-		console.log('messages', JSON.stringify(messages, null, 2));
-		
-		this.state('set', `chat:params:${opts.id.uid}`);
+		// set the chat request parameters
+		this.state('set', `chat:params:${id.uid}`);
 		const params = {
 			model,
 			n: options.n,
@@ -82,7 +76,7 @@ export const func = {
 		};
 	
 		if (q.data.max_tokens) {
-			this.state('set', `chat:tokens:${opts.data.max_tokens}:${opts.id.uid}`);
+			this.state('set', `chat:tokens:${opts.data.max_tokens}:${id.uid}`);
 			params.max_tokens = opts.data.max_tokens;
 		}
 	
@@ -102,59 +96,17 @@ export const func = {
 		}
 	
 		const {tool_calls} = chat.choices[0].message;
-		let data;
-		// this is where we want to trap the function.
+		let data = false;
+		// call the tool_calls function if the response triggers a match.
 		if (tool_calls) {
-			this.state('set', `chat:tools:${id.uid}`);
-			messages.push(chat.choices[0].message);
-	
-			for (const tool of tool_calls) {
-				const func = tool.function.name;
-				const funcArgs = JSON.parse(tool.function.arguments);
-				const funcResponse = await this.func[func](funcArgs);
-	
-				messages.push({
-					tool_call_id: tool.id,
-					role: "tool",
-					name: func,
-					content: funcResponse || 'no-data',
-				}); // extend conversation with function response
-			}
-	
-			this.state('set', `chat:second:${id.uid}`);
-			const second_params = {
-				model,
-				n: options.n,
-				messages,
-				temperature: options.temperature,
-				top_p: options.top_p,
-				frequency_penalty: options.frequency_penalty,
-				presence_penalty: options.presence_penalty,
-			};
-	
-			this.state('await', `chat:second:${id.uid}`);
-			const second_chat = await serv.chat.completions.create(second_params);
-			data = {
-				id: second_chat.id,
-				model: second_chat.model,
-				usage: second_chat.usage,
-				role: second_chat.choices[0].message.role,
-				text: second_chat.choices[0].message.content,
-				created: second_chat.created,
-			}
-			data.hash = this.hash(data);
-	
-			this.state('set', `response:${data.id}`); // set response state
-			this.vars.response = this.lib.copy(data);
-			if (!q.data.history) this.vars.history.push({
-				role: data.role,
-				content: data.text,
-			});
+			this.func.tool_calls({opts,chat});
 		}
+		// else run the default chat response if there is no tool cals.
 		else {
-			this.state('set', `chat:${id.uid}`);
+			this.state('set', `chat:data:${id.uid}`);
 			data = {
-				id: chat.id,
+				id,
+				chatid: chat.id,
 				model: chat.model,
 				usage: chat.usage,
 				role: chat.choices[0].message.role,
@@ -169,16 +121,17 @@ export const func = {
 			this.action('hash', `chat:sha512:${id.uid}`); // set action hash
 			this.hash(data, 'sha512');
 	
-			this.state('set', `response:${data.id}`); // set response state
+			this.state('set', `chat:response:${id.uid}`); // set response state
 			this.vars.response = this.lib.copy(data);
 	
-			// push local history of no history in options.
+			// push local history if no agent history in q data.
 			if (!q.data.history) this.vars.history.push({
 				role: data.role,
 				content: data.text,
 			});
 		}
 		// memory event
+		this.state('set', `chat:memorydata:${id.uid}`); // set state set
 		const memorydata = {
 			id: chat.id,
 			client: q.client,
@@ -194,10 +147,60 @@ export const func = {
 		memorydata.sha256 = this.hash(memorydata, 'sha256');
 		this.action('hash',  `chat:sha512:${id.uid}`); // set action hash
 		memorydata.sha512 = this.hash(memorydata, 'sha512');
+		
+		this.action('talk', `chat:memorydata:${id.uid}`); // set action talk
 		this.talk('data:memory', memorydata);
 		
-		this.state('return', 'data');
+		this.action('return', `chat:data:${id.uid}`);
 		return data;
+	},
+	
+	async tool_calls(chat) {
+		this.state('set', `chat:tools:${id.uid}`);
+		messages.push(chat.choices[0].message);
+		
+		for (const tool of tool_calls) {
+			const func = tool.function.name;
+			const funcArgs = JSON.parse(tool.function.arguments);
+			const funcResponse = await this.func[func](funcArgs);
+		
+			messages.push({
+				tool_call_id: tool.id,
+				role: "tool",
+				name: func,
+				content: funcResponse || 'no-data',
+			}); // extend conversation with function response
+		}
+		
+		this.state('set', `chat:second:${id.uid}`);
+		const second_params = {
+			model,
+			n: options.n,
+			messages,
+			temperature: options.temperature,
+			top_p: options.top_p,
+			frequency_penalty: options.frequency_penalty,
+			presence_penalty: options.presence_penalty,
+		};
+		
+		this.state('await', `chat:second:${id.uid}`);
+		const second_chat = await serv.chat.completions.create(second_params);
+		data = {
+			id: second_chat.id,
+			model: second_chat.model,
+			usage: second_chat.usage,
+			role: second_chat.choices[0].message.role,
+			text: second_chat.choices[0].message.content,
+			created: second_chat.created,
+		}
+		data.hash = this.hash(data);
+		
+		this.state('set', `response:${data.id}`); // set response state
+		this.vars.response = this.lib.copy(data);
+		if (!q.data.history) this.vars.history.push({
+			role: data.role,
+			content: data.text,
+		});		
 	},
 	
 	// utility functions for chat feature

@@ -25,25 +25,43 @@ export const methods = {
 	
 			this.func.chat(packet).then(chat => {
 				data.chat = chat;
+				console.log('Chat Response:\n', data.chat);
 				const response = [
-					`::begin:${this.vars.provider}:${packet.id.uid}`,
+					`${this.box.begin}:${this.vars.provider}:${chat.id.uid}`,
 					this.utils.parse(chat.text),
-					`date: ${this.lib.formatDate(Date.now(), 'long', true)}`,
-					`::end:${this.vars.provider}:${this.hash(chat.text)}`,
+					'---',
+					'## Metadata',
+					`uid: ${chat.id.uid}`,
+					`chatid: ${chat.chatid}`,
+					`model: ${chat.model}`,
+					`tokens: ${chat.usage.total_tokens}`,
+					`date: ${chat.id.date}`,
+					`time: ${chat.id.time}`,
+					`fingerprint: ${chat.id.fingerprint}`,
+					`sha256: ${this.hash(chat.text, 'sha256')}`,
+					`copyright: ${chat.id.copyright}`,
+					`${this.box.end}:${this.vars.provider}:${chat.id.uid}`,
 				].join('\n');
+
 				this.state('parse', `chat:${this.vars.provider}`);
 				return this.question(`${this.askChr}feecting parse ${response}`);
 			}).then(feecting => {
+				this.state('set', `chat:data:feecting:${packet.id.uid}`);
 				data.feecting = feecting.a.data;
+
 				this.action('resolve', `chat:${this.vars.provider}`);
+				this.state('valid', `chat:${this.vars.provider}`);
+				this.intent('good', `chat:${this.vars.provider}`);
 				return resolve({
 					text:feecting.a.text,
 					html: feecting.a.html,
 					data,
 				});
 			}).catch(err => {
-				this.state('reject', `chat:${this.vars.provider}`);
 				console.log('chat error', err);
+				this.action('reject', `chat:${this.vars.provider}`);
+				this.state('invalid', `chat:${this.vars.provider}`);
+				this.intent('bad', `chat:${this.vars.provider}`);
 				return this.err(err, packet, reject);
 			})
 		});
@@ -98,33 +116,33 @@ export const methods = {
 	},
 	
 	/**************
-	func: speech
+	func: voice
 	params: packet
-	describe: transcribe text to speech
+	describe: transcribe text to voice
 	***************/
-	speech(packet) {
+	voice(packet) {
 		const agent = this.agent();
 		const data = {};
 		return new Promise((resolve, reject) => {
-			if (!packet) return resolve(`speech: ${this._messages.nopacket}`);
-			if (!packet.q.text) return resolve(`speech: ${this._messages.notext}`);
+			if (!packet) return resolve(`voice: ${this._messages.nopacket}`);
+			if (!packet.q.text) return resolve(`voice: ${this._messages.notext}`);
 	
-			this.context('speech', packet.q.agent.name);
-			this.action('method', 'speech');
+			this.context('voice', packet.q.agent.name);
+			this.action('method', 'voice');
 	
-			this.func.speech(packet.q).then(speech => {
-				data.speech = speech;
+			this.func.voice(packet.q).then(voice => {
+				data.voice = voice;
 				const text = [
 					`::begin:audio:${packet.id}`,
-					`audio[tts]:${speech.url}`,
-					`url: ${speech.url}`,
-					`::end:audio:${this.hash(speech)}`
+					`audio[tts]:${voice.url}`,
+					`url: ${voice.url}`,
+					`::end:audio:${this.hash(voice)}`
 				].join('\n');
 				this.state('parse', 'speech');
 				return this.question(`${this.askChr}feecting parse ${text}`);
 			}).then(feecting => {
 				data.feecting = feecting.a.data;
-				this.state('resolve', 'speech');
+				this.state('resolve', 'voice');
 				return resolve({
 					text: feecting.a.text,
 					html: feecting.a.html,

@@ -85,7 +85,7 @@ const ChatDeva = new Deva({
     const {VLA} = this.info();
     const {personal} = this.security();
 
-    const {chat} = this.services().personal;
+    const {chat} = this.communication().personal;
     this.vars.chat.options = chat.options;
     this.vars.chat.tools = chat.tools;
     this.vars.chat.models = chat.models;
