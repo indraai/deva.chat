@@ -31,6 +31,7 @@ export const func = {
 			`prompt: ${opts.q.text}`,
 			`uid: ${id.uid}`,
 			`date: ${id.date}`,
+			`time: ${id.time}`,
 			`fingerprint: ${id.fingerprint}`,
 			`copyright: ${id.copyright}`,
 			`${this.box.end}:${this.vars.provider}:${id.uid}`
@@ -115,11 +116,11 @@ export const func = {
 			}
 	
 			this.action('hash', `chat:md5:${id.uid}`); // set action hash
-			this.hash(data, 'md5');
+			data.md5 = this.hash(data, 'md5');
 			this.action('hash', `chat:sha256:${id.uid}`); // set action hash
-			this.hash(data, 'sha256');
+			data.sha256 = this.hash(data, 'sha256');
 			this.action('hash', `chat:sha512:${id.uid}`); // set action hash
-			this.hash(data, 'sha512');
+			data.sha512 = this.hash(data, 'sha512');
 	
 			this.state('set', `chat:response:${id.uid}`); // set response state
 			this.vars.response = this.lib.copy(data);
