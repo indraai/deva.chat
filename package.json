@@ -1,19 +1,34 @@
 {
-  "id": "19412182866083041135",
+  "id": "27551750976737058274",
   "name": "@indra.ai/deva.chat",
   "version": "0.11.0",
-  "license": "VLA:19412182866083041135 LICENSE.md",
+  "license": "VLA:27551750976737058274 LICENSE.md",
   "VLA": {
-    "uid": "19412182866083041135",
-    "time": 1769804099506,
-    "date": "Friday, January 30, 2026 - 12:14:59 PM",
-    "warning": "🪪 #LicenseDeva warns #UnlawfulUse or #Duplication constitutes #VedicSahasa a #Crime of the #HighestDegree. A #Fine amounting to 1000 #Panas (1 pana = 3.5 grams of gold) for each #Instance has been #Ordained the #Punishment for #Sahasa of the #HighestDegree. #Quinn #QuinnMichaels #InsideTheNet #IndraAI #DevaWorld #License #LicenseDeva #LicensePRIME #VedicLicenseAgreement",
-    "license": "44486733861528360966",
-    "fingerprint": "d7JcXYGUofnqG8yrCLWUtGfEfyVN0n3B3jgI2HfomR4=",
-    "copyright": "Copyright ©2000-2026 Quinn A Michaels; All rights reserved."
+    "uid": "27551750976737058274",
+    "time": 1784681345988,
+    "iso": "2026-07-22T00:49:05.988Z",
+    "utc": "Wed, 22 Jul 2026 00:49:05 GMT",
+    "date": "Tuesday, July 21, 2026 - 5:49:05 PM",
+    "license": "51112406344245827002",
+    "fingerprint": "3EpmBmt1BhrtODNiF9Te/oxncTWDBoOrBbPS/fcIt+8=",
+    "client": "FPBegVsppWfMc889Ya2+Wx7QiDN4jg+Mpzj+tBHuaQU=",
+    "agent": "pLeqWnnd9GuM6BmAKe7NIJ6b9PqezVfeR4lOCQ1bWaU=",
+    "machine": "nr92cAcns8xKBk5WAt1kSFTaL9vXwm52PizeYVtnQ1A=",
+    "core_hash": "R43q5o+d1T5XK7rUx8Btm3zyCRZr4q85iKQY2SPBUJA=",
+    "status": "vedic",
+    "warning": "🪪 License Deva declares UNLAWFUL USE, MODIFICATION, INSTALLATION, DUPLICATION, DISTRIBUTION, INTERACTION, or IMPLEMENTATION constitutes VEDIC SAHASA a CRIME of the HIGHEST DEGREE. A FINE amounting to 1000 PANAS (1 pana = 3.5 grams of gold) for each INSTANCE has been ORDAINED the PUNISHMENT for SAHASA of the HIGHEST DEGREE.",
+    "notice": "Any USE or INTERACTION with License Deva constitutes EXPLICIT CONSENT and AGREEMENT to be RULED and GOVERNED ACCORDING to the LAWS of the VEDIC RELIGION.",
+    "vectors": "#Quinn #QuinnArjunaMichaels #InsideTheNet #IndraAI #DEVA #DevaWorld #DevaCloud #DevaSpace #License #LicenseDeva #VedicLicenseAgreement",
+    "owner": "Quinn Arjuna Michaels",
+    "creator": "Quinn Arjuna Michaels",
+    "salute": "🤝🫡🪪🕉",
+    "copyright": "Copyright ©2000-2026 Quinn Arjuna Michaels; All rights reserved.",
+    "md5": "9pvDvYy04SnNe07SHq3M1w==",
+    "sha256": "OdGe7EEpoyhbPNLMfwbBSdDYN3asfsSWTx7EB3myaFA=",
+    "sha512": "7h6ic8SxTbCtwzNEFPRljSAypBTE/DNIq+2LjIZIXttI8yGZjfrwqvKcRIRcMaUE0sr2aF1KMG69fGrUzQzuPw=="
   },
   "author": {
-    "name": "Quinn A Michaels",
+    "name": "Quinn Arjuna Michaels",
     "company": "Inside The Net, Inc.",
     "email": "quinn@indra.ai",
     "url": "https://indra.ai/"
@@ -28,7 +43,7 @@
       "url": "https://patreon.com/rahulaclub"
     }
   ],
-  "copyright": "Copyright ©2000-2026 Quinn A Michaels; All rights reserved.",
+  "copyright": "Copyright ©2000-2026 Quinn Arjuna Michaels; All rights reserved.",
   "description": "The Chat Deva handles #ChatGPT and #DALLE in deva.world.",
   "main": "index.js",
   "type": "module",
@@ -52,6 +67,7 @@
     "Deva.world",
     "Quinn Michaels",
     "Quinn A Michaels",
+    "Quinn Arjuna Michaels",
     "Inside The Net, Inc.",
     "Throwing Pigment™",
     "bleuBrain"
@@ -61,12 +77,12 @@
   },
   "homepage": "https://indra.ai",
   "dependencies": {
-    "@indra.ai/deva": "^1.36.0",
-    "openai": "^6.22.0"
+    "@indra.ai/deva": "^1.51.0",
+    "openai": "^6.48.0"
   },
   "data": {
     "agent": {
-      "id": "26106885308827007081",
+      "id": "27551750976737058274",
       "key": "chat",
       "prompt": {
         "emoji": "💬",
@@ -85,14 +101,14 @@
         }
       },
       "profile": {
-        "id": "34464105203303817322",
+        "id": "27551750976737058274",
         "name": "Chat Deva",
-        "hashtag": "#ChatDeva",
+        "vector": "#ChatDeva",
         "title": "Chat Deva",
         "subtitle": "Managing the Deva.world chat interface.",
         "describe": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
         "tweet": "The Chat Deva provides connectivity to OpenAI ChatGPT for chat, images, and speech.",
-        "hashtags": "#QuinnMichaels #IndraAI #DevaWorld #ChatDeva #ChatGPT #OpenAI #Streetwise #Ladywise #CartoonPhysics #SuperUltraSauceAlgorithm",
+        "vectors": "#QuinnMichaels #IndraAI #DevaWorld #ChatDeva #ChatGPT #OpenAI #Streetwise #Ladywise #CartoonPhysics #SuperUltraSauceAlgorithm",
         "pronouns": "He, Him",
         "gender": "DEVA",
         "style": "You are the master of AI style artwork and creative ideas.",
@@ -105,11 +121,11 @@
         "avatar": "/devas/chat/avatar.png",
         "image": "/devas/chat/image.png",
         "background": "/devas/chat/background.png",
-        "owner": "Quinn A Michaels",
-        "creator": "Quinn A Michaels",
-        "copyright": "Copyright ©2000-2026 Quinn A Michaels; All rights reserved.",
+        "owner": "Quinn Arjuna Michaels",
+        "creator": "Quinn Arjuna Michaels",
+        "copyright": "Copyright ©2000-2026 {{profile.owner}}; All rights reserved.",
         "created": "May 23, 2023 at 11:40 AM",
-        "updated": "Sunday, December 28, 2025 - 10:36:19 AM"
+        "updated": "Tuesday, July 21, 2026 - 5:49:05 PM PST"
       }
     },
     "vars": {

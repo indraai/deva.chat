@@ -1,9 +1,9 @@
 "use strict";
 // Chat Deva Functions
-// Copyright ©2000-2026 Quinn A Michaels; All rights reserved.
-// Legal Signature Required For Lawful Use.
-// Distributed under VLA:19412182866083041135 LICENSE.md
-// Friday, January 30, 2026 - 12:14:59 PM
+// Copyright ©2000-2026 Quinn Arjuna Michaels; All rights reserved.
+// Owner Signature Required For Lawful Use.
+// Distributed under VLA:27551750976737058274 LICENSE.md
+// Tuesday, July 21, 2026 - 5:49:05 PM PST
 
 export const func = {
 	/**************
@@ -47,7 +47,6 @@ export const func = {
 		
 		// set the corpus at the top of the request if one exists.
 		if (q.data.corpus) {
-			this.prompt(`Set Chat Corpus`);
 			this.state('set', `chat:corpus:${id.uid}`);
 			messages.unshift({role: 'system', content: q.data.corpus});
 		}
